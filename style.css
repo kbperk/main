@@ -1,0 +1,184 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=DotGothic16&family=Fredoka:wght@600&family=M+PLUS+Rounded+1c:wght@800&family=Zen+Maru+Gothic:wght@700&display=swap');
+
+/* === ベース設定 === */
+.fixed-bg-container {
+    background-color: #F0FFF4;
+    background-image: url('メインページの背景.png');
+    /* 前回のご指定通り、背景画像の下端を合わせる設定 */
+    background-position: center bottom;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed; 
+}
+
+body {
+    color: #444;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    overflow-x: hidden;
+    margin: 0;
+}
+
+/* === グラスモーフィズム（ガラスの透け感）=== */
+.glass-panel {
+    background: rgba(240, 255, 244, 0.05); 
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.glass-panel-light {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+.glass-panel-dark {
+    background: rgba(28, 28, 30, 0.1); 
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* === 楽しいローディング演出 === */
+#loader {
+    position: fixed; inset: 0; z-index: 9999;
+    background-color: #32D74B;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1);
+}
+.loaded #loader { transform: translateY(-100%); }
+
+.loader-character {
+    font-size: 5rem;
+    animation: loader-bounce 0.6s infinite alternate cubic-bezier(0.5, 0.05, 1, 0.5);
+}
+
+@keyframes loader-bounce {
+    from { transform: translateY(-80px) scale(0.9, 1.1); } 
+    to { transform: translateY(0) scale(1.1, 0.9); }     
+}
+
+.loader-shadow {
+    width: 60px; height: 10px; background: rgba(0,0,0,0.2); border-radius: 50%; margin-top: 20px;
+    animation: loader-shadow 0.6s infinite alternate cubic-bezier(0.5, 0.05, 1, 0.5);
+}
+
+@keyframes loader-shadow {
+    from { transform: scale(0.5); opacity: 0.5; } 
+    to { transform: scale(1); opacity: 1; }       
+}
+
+/* === 木の板の「通信中でっせ」装飾 === */
+.wood-board {
+    background-color: #5c3a21;
+    background-image:
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 0, 0, 0.1) 2px, rgba(0, 0, 0, 0.1) 4px),
+        repeating-radial-gradient(ellipse at 50% 150%, #7a4b29, #7a4b29 10px, #6b4226 15px, #6b4226 25px);
+    border: 3px solid #2e1a0f;
+    border-radius: 8px;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.8), inset 1px 1px 3px rgba(255,255,255,0.2), 8px 8px 15px rgba(0,0,0,0.6);
+    transform: rotate(-3deg);
+}
+
+.nail {
+    position: absolute;
+    width: 10px; height: 10px;
+    background-color: #A0A0A0;
+    border-radius: 50%;
+    box-shadow: inset -2px -2px 4px rgba(0,0,0,0.6), 1px 1px 2px rgba(255,255,255,0.4);
+}
+
+.text-stroke-black {
+    -webkit-text-stroke: 2px #1C1C1E;
+    text-shadow: 3px 3px 0px #000;
+}
+
+/* === CMS制御用プリセット (style 1~10) === */
+.cms-style-1 { font-family: 'Zen Maru Gothic', sans-serif; }
+.cms-style-2 { font-family: 'Fredoka', sans-serif; color: #fff !important; text-shadow: 0 0 5px #fff, 0 0 10px #32D74B, 0 0 20px #32D74B; letter-spacing: 0.1em; }
+.cms-style-3 { font-family: 'M PLUS Rounded 1c', sans-serif; -webkit-text-stroke: 6px white; paint-order: stroke fill; filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.15)); display: inline-block;}
+.cms-style-4 { font-family: 'Fredoka', sans-serif; position: relative; display: inline-block; }
+.cms-style-4::before, .cms-style-4::after { content: attr(data-cms-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8; }
+.cms-style-4::before { color: #0ff; z-index: -1; transform: translate(-2px, -2px); clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%); }
+.cms-style-4::after { color: #f0f; z-index: -2; transform: translate(2px, 2px); clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%); }
+.cms-style-5 { background: linear-gradient(transparent 60%, rgba(255, 235, 59, 0.7) 60%); padding: 0 4px; border-radius: 2px; }
+.cms-style-6 { font-family: 'DotGothic16', sans-serif; letter-spacing: 2px; }
+.cms-style-7 { font-family: 'Bangers', cursive; letter-spacing: 2px; text-shadow: 3px 3px 0px #000; transform: skew(-5deg); display: inline-block; }
+.cms-style-8 { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.6); padding: 0.2em 0.8em; border-radius: 12px; }
+.cms-style-9 { font-family: 'Fredoka', sans-serif; color: #fff !important; text-shadow: 0 0 5px #fefcc9, 10px -10px 30px #feec85, -20px -20px 40px #ffae34, 20px -40px 50px #ec760c; }
+.cms-style-10 { font-family: 'M PLUS Rounded 1c', sans-serif; background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); background-size: 200% auto; color: transparent !important; -webkit-background-clip: text; background-clip: text; animation: rainbow 3s linear infinite; }
+@keyframes rainbow { to { background-position: 200% center; } }
+
+/* === CMS制御用アクション (anim 1~10) === */
+.cms-anim-1 {}
+.cms-anim-2 { animation: bounce-soft 1.5s infinite ease-in-out; display: inline-block; }
+.cms-anim-3 { animation: pulse-heart 2s infinite ease-in-out; display: inline-block; }
+.cms-anim-4 { animation: shake-hard 0.2s infinite; display: inline-block; }
+.cms-anim-5 { animation: sway 3s infinite ease-in-out; display: inline-block; transform-origin: center bottom; }
+.cms-anim-6 { animation: spin-slow 8s linear infinite; display: inline-block; }
+.cms-anim-7 { animation: fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.cms-anim-8 { animation: slide-in-left 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.cms-anim-9 { animation: jelly 1s infinite; display: inline-block; }
+.cms-anim-10 { animation: pop-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+/* アニメーション定義 */
+@keyframes bounce-soft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes pulse-heart { 0% { transform: scale(1); } 15% { transform: scale(1.15); } 30% { transform: scale(1); } }
+@keyframes shake-hard { 0% { transform: translate(0, 0); } 25% { transform: translate(-2px, 2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, -2px); } 100% { transform: translate(0, 0); } }
+@keyframes sway { 0% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } 100% { transform: rotate(-5deg); } }
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+@keyframes fade-in-up { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes slide-in-left { 0% { opacity: 0; transform: translateX(-100px); } 100% { opacity: 1; transform: translateX(0); } }
+@keyframes jelly { 0%, 100% { transform: scale(1, 1); } 25% { transform: scale(0.9, 1.1); } 50% { transform: scale(1.1, 0.9); } 75% { transform: scale(0.95, 1.05); } }
+@keyframes pop-in { 0% { opacity: 0; transform: scale(0); } 70% { transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
+
+/* === 共通パーツ === */
+.wave-separator { position: absolute; left: 0; width: 100%; overflow: hidden; line-height: 0; z-index: 5; }
+.wave-separator svg { display: block; width: calc(100% + 1.3px); height: 50px; }
+.wave-separator.bottom { bottom: 0; }
+.wave-separator.top { top: 0; transform: rotate(180deg); }
+.fill-pop-bg { fill: #F0FFF4; }
+
+.marquee-text { display: inline-block; white-space: nowrap; animation: marquee 20s linear infinite; }
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* 踊るテキスト用 */
+.dancing-text { display: inline-block; }
+.dancing-char { display: inline-block; animation: wave-text 2s infinite ease-in-out; }
+@keyframes wave-text { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+.text-stroke-green { -webkit-text-stroke: 3px #32D74B; color: transparent; }
+.text-stroke-white { -webkit-text-stroke: 3px white; text-shadow: 3px 3px 0px rgba(0,0,0,0.2); }
+.text-shadow-heavy { text-shadow: 3px 3px 0px #000; }
+
+/* Blobアニメーション */
+.animate-blob { animation: blob 7s infinite; }
+.animation-delay-2000 { animation-delay: 2s; }
+@keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0px, 0px) scale(1); }
+}
+
+/* JS連動 */
+.js-scroll { visibility: hidden; } 
+.js-scroll.is-active { visibility: visible; }
+.js-scroll.is-active.elastic-pop { animation: pop-in 0.8s forwards; }
+.js-scroll.is-active.slide-left { animation: slide-in-left 0.8s forwards; }
+.js-scroll.is-active.slide-right { animation: slide-in-right 0.8s forwards; }
+.js-scroll.is-active.fade-up { animation: fade-in-up 0.8s forwards; }
+@keyframes slide-in-right { 0% { opacity: 0; transform: translateX(100px); } 100% { opacity: 1; transform: translateX(0); } }
+
+/* ギャラリー用のカード3D装飾 */
+.area-card-3d { perspective: 1000px; }
+.card-inner { transition: transform 0.5s ease; transform-style: preserve-3d; }
+.area-card-3d:hover .card-inner { transform: rotateX(5deg) rotateY(5deg) scale(1.05); }
+
+/* === 元の四角いかっこいいKBハンコデザイン（水平垂直・サイズ半分） === */
+.stamp-design {
+    transform: none; 
+    box-shadow: inset 0 0 0 3px #FF3B30, 0 0 0 3px #FF3B30; 
+    background-color: rgba(255, 255, 255, 0.4); 
+    backdrop-filter: blur(2px);
+    display: inline-block;
+}

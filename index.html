@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KB Park - TOKYO TRAMPOLINE PARK</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&family=Fredoka:wght@600&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pop: {
+                            green:  '#32D74B',
+                            yellow: '#FFD60A',
+                            cyan:   '#30D5C8',
+                            pink:   '#FF69B4',
+                            red:    '#FF3B30',
+                            text:   '#333333',
+                            bg:     '#F0FFF4'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Zen Maru Gothic"', 'sans-serif'],
+                        english: ['"Fredoka"', 'sans-serif'],
+                    },
+                    animation: {
+                        'spin-slow': 'spin 10s linear infinite',
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="text-pop-text antialiased overflow-x-hidden fixed-bg-container">
+
+    <a href="https://kbperk.github.io/User/" class="fixed bottom-6 right-6 z-[9999] bg-pop-red text-white border-4 border-black rounded-full px-6 py-4 font-bold text-xl md:text-2xl shadow-[6px_6px_0px_#1C1C1E] animate-pulse-fast hover:scale-110 transition-transform flex items-center gap-2 group isolate">
+        <span class="group-hover:-rotate-12 transition-transform text-2xl">🎫</span>
+        <span>ご予約はこちら</span>
+    </a>
+
+    <div id="loader">
+        <img src="kb君万歳.png" alt="Loading" id="loader_char" class="loader-character w-32 h-32 object-contain drop-shadow-2xl">
+        <div class="loader-shadow"></div>
+        <div class="mt-12 text-center">
+            <div class="wood-board relative inline-block px-8 py-4">
+                <div class="nail top-2 left-2"></div>
+                <div class="nail top-2 right-2"></div>
+                <div class="nail bottom-2 left-2"></div>
+                <div class="nail bottom-2 right-2"></div>
+                <div id="loader_text" class="relative z-10 text-3xl font-bold text-white tracking-widest text-stroke-black">通信中でっせ</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed inset-0 z-[-2] pointer-events-none overflow-hidden opacity-20">
+        <div class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle,_#32D74B_3px,_transparent_3px)] bg-[length:40px_40px] animate-spin-slow"></div>
+    </div>
+
+    <nav class="fixed top-0 w-full z-50 glass-panel border-b-4 border-pop-green transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#" id="nav_logo" class="text-3xl font-english font-bold text-pop-green tracking-wider hover:-rotate-12 transition transform inline-block">KB Park</a>
+            
+            <div class="hidden md:flex gap-6 font-bold text-gray-700 text-sm">
+                <a href="#concept" id="nav_menu_concept" class="nav-item hover:text-pop-green hover:scale-110 transition inline-block">CONCEPT</a>
+                <a href="#gallery_section" id="nav_menu_gallery" class="nav-item hover:text-pop-green hover:scale-110 transition inline-block">GALLERY</a>
+                <a href="#price" id="nav_menu_price" class="nav-item hover:text-pop-green hover:scale-110 transition inline-block">PRICE</a>
+                <a href="#access" id="nav_menu_access" class="nav-item hover:text-pop-green hover:scale-110 transition inline-block">ACCESS</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="relative z-10 w-full">
+        
+        <section class="relative w-full h-[75vh] md:h-[95vh] mt-20 pointer-events-none" id="hero_section">
+            <div class="absolute inset-0 z-0 pb-10">
+                <img id="img_hero" src="kbperkヒーロー画像.png" class="absolute inset-0 w-full h-full object-cover object-top invisible" alt="KB Park Hero">
+                
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="relative w-full h-full max-w-5xl mx-auto">
+                        <div id="kb_stamp" class="absolute bottom-8 right-6 md:bottom-20 md:right-20 z-10 pointer-events-none invisible">
+                            <div class="stamp-design border-[6px] border-pop-red text-pop-red font-english font-black text-5xl md:text-7xl px-5 py-2 rounded-2xl opacity-90 mix-blend-multiply tracking-tighter">
+                                KB
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="relative py-20 my-24 md:my-40 glass-panel overflow-hidden text-center">
+            <div class="absolute top-10 left-10 text-6xl opacity-30 animate-bounce delay-100 gs-float">🌿</div>
+            <div class="absolute top-20 right-10 text-6xl opacity-30 animate-bounce delay-700 gs-float">✨</div>
+            <div class="absolute bottom-10 left-1/4 opacity-30 animate-bounce delay-300 gs-float">
+                 <img src="kb君万歳.png" class="w-16 h-16 opacity-50" alt="">
+            </div>
+
+            <div class="container mx-auto px-4 relative z-10">
+                <div class="inline-block mb-8 js-scroll fade-up">
+                    <div id="text_hero_badge" class="bg-pop-yellow text-pop-dark px-6 py-2 rounded-full font-bold border-4 border-white shadow-xl text-lg md:text-xl transform -rotate-2">
+                        ★ 広島に誕生！ GRAND OPEN ★
+                    </div>
+                </div>
+                
+                <h1 class="font-english font-bold mb-8 leading-none perspective-text js-scroll elastic-pop delay-100">
+                    <div id="text_hero_title_1" class="dancing-text text-6xl md:text-9xl text-pop-dark block mb-2" data-cms-text="PLAY THE">PLAY THE</div>
+                    <div id="text_hero_title_2" class="dancing-text text-7xl md:text-[10rem] text-pop-green text-stroke-white block" data-cms-text="GRAVITY!">GRAVITY!</div>
+                </h1>
+                
+                <p class="js-scroll slide-up text-gray-800 text-lg md:text-2xl font-bold mb-12 glass-panel-light bg-white/70 backdrop-blur-md px-6 md:px-10 py-6 md:py-8 rounded-[2rem] md:rounded-[3rem] shadow-lg border-b-8 border-pop-cyan inline-block max-w-3xl">
+                    <span id="text_hero_desc_1">重力を遊べ！ココロ弾む！</span><br>
+                    <span class="text-pop-red text-2xl md:text-3xl" id="text_hero_desc_highlight">地域密着型</span>
+                    <span id="text_hero_desc_2">のトランポリンパーク誕生</span>
+                </p>
+            </div>
+        </section>
+
+        <section class="container mx-auto px-6 my-24 md:my-40 relative z-20">
+            <div class="js-scroll fade-up glass-panel-light bg-white/70 backdrop-blur-md rounded-full shadow-2xl p-2 border-4 border-pop-yellow flex flex-col md:flex-row items-center gap-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
+                <div id="text_news_badge" class="bg-pop-green text-white font-bold px-6 py-2 rounded-full shadow-md animate-pulse whitespace-nowrap text-sm md:text-base">NEWS</div>
+                <div class="flex-1 w-full overflow-hidden px-4">
+                    <div class="marquee-text text-gray-700 font-bold text-sm md:text-lg">
+                        <span id="text_news_marquee">
+                            <span>【重要】土日祝は50分、平日はたっぷり60分遊べます！</span>
+                            <span class="mx-8 text-pop-cyan">★</span>
+                            <span>お得な会員家族割スタート！</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="bg-pop-cyan text-white rounded-full p-2 mr-2 hidden md:block">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </div>
+            </div>
+        </section>
+
+        <section id="concept" class="py-20 my-24 md:my-40 relative glass-panel">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <span id="text_concept_badge" class="js-scroll fade-up inline-block text-pop-cyan font-english font-bold text-lg md:text-xl tracking-widest mb-2 glass-panel-light bg-white/70 backdrop-blur-md px-4 rounded-full shadow-sm border-2 border-white">WELCOME TO KB PARK</span>
+                    <h2 class="js-scroll elastic-pop text-4xl md:text-6xl font-bold text-pop-text mt-4 bg-white/40 inline-block px-6 py-2 rounded-2xl backdrop-blur-sm">
+                        <span id="text_concept_title_highlight" class="text-pop-green inline-block hover:animate-spin">360°</span> <span id="text_concept_title_main">全てが遊び場。</span>
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
+                    <div class="js-scroll slide-left relative group px-4 md:px-0">
+                        <div class="absolute top-[-20px] left-[0px] bg-pop-green w-24 h-24 md:w-32 md:h-32 rounded-full opacity-50 animate-blob"></div>
+                        <div class="absolute bottom-[-20px] right-[0px] bg-pop-cyan w-20 h-20 md:w-24 md:h-24 rounded-full opacity-50 animate-blob animation-delay-2000"></div>
+                        <div class="tilt-card rounded-[2rem] border-8 border-white/80 shadow-2xl overflow-hidden transform transition duration-500">
+                            <img id="img_concept" src="kb君がトランポリンを跳ぶ.jpg" class="w-full h-[300px] md:h-[500px] object-cover hover:scale-110 transition duration-700">
+                        </div>
+                    </div>
+                    
+                    <div class="js-scroll slide-right space-y-6 px-4 md:px-0">
+                        <h3 class="text-2xl md:text-3xl font-bold leading-relaxed border-l-[8px] md:border-l-[12px] border-pop-cyan pl-6 py-2 text-gray-800 bg-white/60 rounded-r-2xl backdrop-blur-sm">
+                            <span id="text_concept_head_1">はじめて大歓迎！</span><br>
+                            <span id="text_concept_head_2" class="text-pop-green text-3xl md:text-4xl">本格設備で「跳ぶ」楽しさを！</span>
+                        </h3>
+                        <p id="text_concept_body" class="text-gray-700 leading-8 text-base md:text-lg font-bold bg-white/60 p-4 rounded-2xl backdrop-blur-sm">
+                            KB Parkは、トランポリンが初めてのお子様も、親子で一緒に遊びたい方も大歓迎！楽しく安全に遊べる工夫がいっぱいです。
+                        </p>
+                        
+                        <ul class="space-y-4">
+                            <li class="js-scroll fade-up flex items-start gap-4 glass-panel-light bg-white/70 backdrop-blur-md p-4 rounded-2xl shadow-md border-2 border-white hover:border-pop-pink transition">
+                                <span id="text_concept_point_1_num" class="bg-pop-pink text-white min-w-[2.5rem] h-10 rounded-full flex items-center justify-center font-bold text-lg mt-1 shrink-0">1</span>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 text-base md:text-lg mb-2">地域唯一！「競技用トランポリン」＆「壁」</h4>
+                                    <p class="text-gray-700 text-sm font-bold leading-relaxed">ポンッと跳ねるだけで気分はプロ選手！？ 当パークでは珍しい競技用トランポリンを完備。「こんなに跳べるの！？」というフワフワ体験に子供たちも大興奮！壁を使って跳ぶ大人気の「ウォールトランポリン」ができるのも地域でココだけ！</p>
+                                </div>
+                            </li>
+                            <li class="js-scroll fade-up delay-100 flex items-start gap-4 glass-panel-light bg-white/70 backdrop-blur-md p-4 rounded-2xl shadow-md border-2 border-white hover:border-pop-yellow transition">
+                                <span id="text_concept_point_2_num" class="bg-pop-yellow text-white min-w-[2.5rem] h-10 rounded-full flex items-center justify-center font-bold text-lg mt-1 shrink-0">2</span>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 text-base md:text-lg mb-2">遊びからステップアップ練習まで</h4>
+                                    <p class="text-gray-700 text-sm font-bold leading-relaxed">ミドルサイズのトランポリンや、浮き輪の様にやわらかい床の「エアマット」も設置。安全に思いっきりジャンプできるので、本格的なチアやパルクール、アクロバットの練習にもぴったりです。</p>
+                                </div>
+                            </li>
+                            <li class="js-scroll fade-up delay-200 flex items-start gap-4 glass-panel-light bg-white/70 backdrop-blur-md p-4 rounded-2xl shadow-md border-2 border-white hover:border-pop-cyan transition">
+                                <span id="text_concept_point_3_num" class="bg-pop-cyan text-white min-w-[2.5rem] h-10 rounded-full flex items-center justify-center font-bold text-lg mt-1 shrink-0">3</span>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 text-base md:text-lg mb-2">キッズも夢中になる楽しい仕掛け</h4>
+                                    <p class="text-gray-700 text-sm font-bold leading-relaxed">お子様に大人気の「回転バー」や、のんびり揺れる「ハンモック」もご用意！ガチの練習だけでなく、ご家族で1日中たっぷり遊べる安心の空間です。</p>
+                                </div>
+                            </li>
+                        </ul>
+                        <p class="text-xs text-gray-600 font-bold mt-4 text-right pr-2">※皆様に安全に楽しく遊んでいただくため、スタッフの指示やルールに配慮してのご利用をお願いいたします。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="gallery_section" class="py-24 my-24 md:my-40 glass-panel relative hidden">
+            <div class="wave-separator top">
+                 <svg viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="fill-white opacity-80"></path></svg>
+            </div>
+
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="text-center mb-16">
+                    <span id="text_gallery_badge" class="js-scroll fade-up inline-block bg-pop-yellow text-pop-dark px-4 py-1 rounded-full font-bold mb-4 shadow-md -rotate-3 border-2 border-white text-sm md:text-base">PARK PHOTOS</span>
+                    <h2 id="text_gallery_title" class="js-scroll elastic-pop text-4xl md:text-6xl font-english font-bold text-pop-green bg-white/40 inline-block px-6 md:px-8 py-1 rounded-2xl backdrop-blur-sm">GALLERY</h2>
+                </div>
+
+                <div id="gallery_container" class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+                    </div>
+            </div>
+
+            <div class="wave-separator bottom rotate-180">
+                 <svg viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="fill-white opacity-80"></path></svg>
+            </div>
+        </section>
+
+        <section id="price" class="py-20 my-24 md:my-40 glass-panel">
+            <div class="container mx-auto px-6 max-w-5xl">
+                <div class="text-center mb-10">
+                    <h2 id="text_price_title" class="js-scroll elastic-pop text-5xl md:text-6xl font-english font-bold text-pop-dark mb-2 bg-white/40 inline-block px-8 py-1 rounded-2xl backdrop-blur-sm">PRICE</h2><br>
+                    <p id="text_price_subtitle" class="text-pop-red font-bold text-lg md:text-xl tracking-widest border-b-4 border-pop-red inline-block pb-1 bg-white/60 px-4 rounded-t-lg mt-2">ご利用料金</p>
+                </div>
+
+                <div class="text-center mb-8 font-bold text-sm md:text-xl text-gray-700 glass-panel-light bg-white/70 backdrop-blur-md inline-block px-4 py-2 rounded-full border-4 border-white js-scroll elastic-pop mx-auto flex justify-center w-max shadow-md">
+                    平日 <span class="text-pop-green text-lg md:text-2xl mx-1">60分</span> / 土日祝 <span class="text-pop-red text-lg md:text-2xl mx-1">50分</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-10">
+                    <div class="js-scroll slide-up glass-panel-light border-[6px] md:border-8 border-white rounded-[2rem] overflow-hidden shadow-[6px_6px_0px_#32D74B] md:shadow-[8px_8px_0px_#32D74B]">
+                        <div class="bg-pop-green text-white font-bold text-center py-3 md:py-4 text-2xl md:text-3xl border-b-[6px] md:border-b-8 border-white">
+                            🎟️ 会員料金
+                        </div>
+                        <div class="p-6 md:p-8 text-center bg-white/80 backdrop-blur-md">
+                            <div class="text-gray-500 font-bold mb-1 text-sm md:text-base">1名あたり</div>
+                            <div class="text-5xl md:text-6xl font-english font-bold text-gray-800">¥1,500</div>
+                        </div>
+                    </div>
+
+                    <div class="js-scroll slide-up delay-100 glass-panel-light border-[6px] md:border-8 border-white rounded-[2rem] overflow-hidden shadow-[6px_6px_0px_#1C1C1E] md:shadow-[8px_8px_0px_#1C1C1E]">
+                        <div class="bg-gray-200 text-gray-800 font-bold text-center py-3 md:py-4 text-2xl md:text-3xl border-b-[6px] md:border-b-8 border-white">
+                            🎫 ビジター
+                        </div>
+                        <div class="p-6 md:p-8 text-center bg-white/80 backdrop-blur-md">
+                            <div class="text-gray-500 font-bold mb-1 text-sm md:text-base">1名あたり</div>
+                            <div class="text-5xl md:text-6xl font-english font-bold text-gray-700">¥1,800</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="js-scroll elastic-pop glass-panel-light border-[6px] md:border-8 border-white rounded-[2rem] overflow-hidden shadow-[8px_8px_0px_#FF3B30] md:shadow-[12px_12px_0px_#FF3B30] transform -rotate-1 relative mb-10">
+                    <div class="absolute top-0 right-0 bg-pop-yellow text-gray-800 font-bold px-4 md:px-8 py-1 border-l-[6px] border-b-[6px] border-white rounded-bl-[1.5rem] text-sm md:text-xl z-10">RECOMMEND!!</div>
+                    <div class="bg-pop-red text-white font-bold text-center py-4 md:py-6 text-2xl md:text-4xl border-b-[6px] border-white tracking-widest text-shadow-heavy">
+                        👨‍👩‍👧 家族割パック
+                    </div>
+                    <div class="p-4 md:p-8 bg-white/10">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 text-center">
+                            <div class="bg-white/80 backdrop-blur-md p-4 md:p-6 rounded-xl border-4 border-white/50 shadow-sm md:flex-none flex justify-between items-center md:block">
+                                <div class="text-pop-red font-bold text-sm md:text-xl md:mb-2">大人 + 未就学児</div>
+                                <div class="text-2xl md:text-4xl font-bold text-gray-800">¥2,000</div>
+                            </div>
+                            <div class="bg-white/80 backdrop-blur-md p-4 md:p-6 rounded-xl border-4 border-white/50 shadow-sm md:flex-none flex justify-between items-center md:block">
+                                <div class="text-pop-red font-bold text-sm md:text-xl md:mb-2">大人 + 小学生</div>
+                                <div class="text-2xl md:text-4xl font-bold text-gray-800">¥2,500</div>
+                            </div>
+                            <div class="bg-white/80 backdrop-blur-md p-4 md:p-6 rounded-xl border-4 border-white/50 shadow-sm md:flex-none flex justify-between items-center md:block">
+                                <div class="text-pop-red font-bold text-sm md:text-xl md:mb-2">大人 + 子供2名</div>
+                                <div class="text-2xl md:text-4xl font-bold text-gray-800">¥3,000</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 js-scroll fade-up">
+                    <div class="glass-panel-light bg-white/80 backdrop-blur-md p-4 md:p-6 rounded-2xl border-4 border-white flex items-center justify-between shadow-md">
+                        <span class="font-bold text-base md:text-xl text-gray-800">⏳ 30分延長</span>
+                        <span class="text-2xl md:text-3xl font-bold text-pop-green">¥600</span>
+                    </div>
+                    <div class="bg-pop-cyan p-4 md:p-6 rounded-2xl border-4 border-white flex items-center justify-between shadow-md text-white">
+                        <span class="font-bold text-base md:text-xl text-white">🎟️ 回数券(5回)</span>
+                        <span class="text-2xl md:text-3xl font-bold text-white">¥7,000</span>
+                    </div>
+                </div>
+
+                <div class="js-scroll fade-up mt-8 md:mt-12 glass-panel-light bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-lg border-l-[6px] md:border-l-8 border-pop-pink flex items-start gap-4">
+                    <div id="text_reg_icon" class="text-3xl md:text-4xl">⚠️</div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-1 md:mb-2 text-base md:text-xl" id="text_reg_title">初回登録・再発行</h4>
+                        <p class="text-gray-700 font-bold text-sm md:text-base leading-relaxed" id="text_reg_desc">
+                            初回のみ登録料 <span class="text-pop-pink text-base md:text-xl">¥800</span>（専用ソックス付）が必要です。<br>
+                            カード再発行：<span class="text-pop-pink text-base md:text-xl">¥300</span><br>
+                            <span class="text-xs md:text-sm text-gray-500">※2回目以降はカードとソックスをご持参ください。</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-10 my-24 md:my-40 container mx-auto px-6 max-w-3xl glass-panel-light rounded-[2rem] md:rounded-[3rem] shadow-xl border-4 border-white">
+            <h3 id="text_faq_title" class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8 mt-2 bg-white/50 inline-block px-8 py-2 rounded-xl backdrop-blur-sm mx-auto flex justify-center w-max">よくある質問</h3>
+            <div class="space-y-4 mb-2">
+                <details class="js-scroll fade-up group bg-white/20 rounded-xl md:rounded-2xl shadow-sm overflow-hidden border-2 border-white">
+                    <summary class="flex justify-between items-center p-4 md:p-6 font-bold text-gray-700 text-sm md:text-lg list-none bg-white/70 group-open:bg-white/80 cursor-pointer">
+                        <div class="flex items-center gap-2 md:gap-4">
+                            <span class="text-pop-cyan text-xl md:text-2xl">Q.</span>
+                            <span id="text_faq_1_q">予約は必要ですか？</span>
+                        </div>
+                        <span class="transform group-open:rotate-180 transition text-pop-cyan text-lg md:text-xl">▼</span>
+                    </summary>
+                    <div class="p-4 md:p-6 text-gray-600 font-bold text-sm md:text-base leading-relaxed border-t border-white/50 bg-white/70">
+                        <span class="text-pop-green text-lg md:text-xl mr-1">A.</span>
+                        <span id="text_faq_1_a">予約なしでもご利用可能ですが、混雑時は入場制限がかかる場合がございます。<span class="text-pop-green">Web予約をおすすめしております。</span></span>
+                    </div>
+                </details>
+                
+                <details class="js-scroll fade-up delay-100 group bg-white/20 rounded-xl md:rounded-2xl shadow-sm overflow-hidden border-2 border-white">
+                    <summary class="flex justify-between items-center p-4 md:p-6 font-bold text-gray-700 text-sm md:text-lg list-none bg-white/70 group-open:bg-white/80 cursor-pointer">
+                         <div class="flex items-center gap-2 md:gap-4">
+                            <span class="text-pop-green text-xl md:text-2xl">Q.</span>
+                            <span id="text_faq_2_q">服装の指定はありますか？</span>
+                        </div>
+                        <span class="transform group-open:rotate-180 transition text-pop-green text-lg md:text-xl">▼</span>
+                    </summary>
+                     <div class="p-4 md:p-6 text-gray-600 font-bold text-sm md:text-base leading-relaxed border-t border-white/50 bg-white/70">
+                        <span class="text-pop-green text-lg md:text-xl mr-1">A.</span>
+                        <span id="text_faq_2_a">動きやすい服装でお願いします。<span class="text-pop-pink">※ジーンズや金具のついた服はご遠慮ください。</span></span>
+                    </div>
+                </details>
+
+                <details class="js-scroll fade-up delay-200 group bg-white/20 rounded-xl md:rounded-2xl shadow-sm overflow-hidden border-2 border-white">
+                    <summary class="flex justify-between items-center p-4 md:p-6 font-bold text-gray-700 text-sm md:text-lg list-none bg-white/70 group-open:bg-white/80 cursor-pointer">
+                         <div class="flex items-center gap-2 md:gap-4">
+                            <span class="text-pop-pink text-xl md:text-2xl">Q.</span>
+                            <span id="text_faq_3_q" class="text-left">クレジットカードは対応していますか？</span>
+                        </div>
+                        <span class="transform group-open:rotate-180 transition text-pop-pink text-lg md:text-xl min-w-[20px] text-right">▼</span>
+                    </summary>
+                     <div class="p-4 md:p-6 text-gray-600 font-bold text-sm md:text-base leading-relaxed border-t border-white/50 bg-white/70">
+                        <span class="text-pop-green text-lg md:text-xl mr-1">A.</span>
+                        <span id="text_faq_3_a">多数対応はしておりますが、ご利用の際はプレイ前にご確認をお願いします。</span>
+                    </div>
+                </details>
+
+                <details class="js-scroll fade-up delay-300 group bg-white/20 rounded-xl md:rounded-2xl shadow-sm overflow-hidden border-2 border-white">
+                    <summary class="flex justify-between items-center p-4 md:p-6 font-bold text-gray-700 text-sm md:text-lg list-none bg-white/70 group-open:bg-white/80 cursor-pointer">
+                         <div class="flex items-center gap-2 md:gap-4">
+                            <span class="text-pop-yellow text-xl md:text-2xl">Q.</span>
+                            <span id="text_faq_4_q" class="text-left">初めてですが一人で行っても大丈夫ですか？</span>
+                        </div>
+                        <span class="transform group-open:rotate-180 transition text-pop-yellow text-lg md:text-xl min-w-[20px] text-right">▼</span>
+                    </summary>
+                     <div class="p-4 md:p-6 text-gray-600 font-bold text-sm md:text-base leading-relaxed border-t border-white/50 bg-white/70">
+                        <span class="text-pop-green text-lg md:text-xl mr-1">A.</span>
+                        <span id="text_faq_4_a">もちろん大丈夫です！一般的なスポーツ施設と同じく安心してご来店ください！</span>
+                    </div>
+                </details>
+
+                <details class="js-scroll fade-up delay-400 group bg-white/20 rounded-xl md:rounded-2xl shadow-sm overflow-hidden border-2 border-white">
+                    <summary class="flex justify-between items-center p-4 md:p-6 font-bold text-gray-700 text-sm md:text-lg list-none bg-white/70 group-open:bg-white/80 cursor-pointer">
+                         <div class="flex items-center gap-2 md:gap-4">
+                            <span class="text-pop-cyan text-xl md:text-2xl">Q.</span>
+                            <span id="text_faq_5_q">子供1人だけで遊べますか？</span>
+                        </div>
+                        <span class="transform group-open:rotate-180 transition text-pop-cyan text-lg md:text-xl">▼</span>
+                    </summary>
+                     <div class="p-4 md:p-6 text-gray-600 font-bold text-sm md:text-base leading-relaxed border-t border-white/50 bg-white/70">
+                        <span class="text-pop-green text-lg md:text-xl mr-1">A.</span>
+                        <span id="text_faq_5_a">小学生未満のお子様1人だけのご利用はお断りしております。親御様もご一緒にチャレンジをお待ちしております。</span>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section id="access" class="py-20 md:py-32 mt-24 mb-32 glass-panel-dark text-white relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle,_#ffffff_2px,_transparent_2px)] bg-[length:30px_30px] z-0 pointer-events-none"></div>
+            
+            <div class="container mx-auto px-6 relative z-10 flex flex-col md:flex-row gap-8 md:gap-12 items-center">
+                <div class="w-full md:w-1/2 space-y-6">
+                    <div class="bg-black/40 inline-block p-4 md:p-6 rounded-xl md:rounded-2xl backdrop-blur-md">
+                        <span id="text_access_badge" class="text-pop-yellow font-bold text-sm md:text-base tracking-widest border-b-2 border-pop-yellow pb-1">LOCATION</span>
+                        <h2 id="text_access_title" class="text-4xl md:text-5xl font-english font-bold mt-2 text-pop-cyan">ACCESS</h2>
+                    </div>
+                    
+                    <div class="space-y-4 md:space-y-6 bg-white/5 p-6 md:p-8 rounded-2xl md:rounded-3xl backdrop-blur-md border border-white/10">
+                        <div class="flex items-start gap-3 md:gap-4 bg-black/40 p-4 rounded-xl">
+                            <div class="bg-pop-cyan p-2 rounded-lg text-white text-sm md:text-base">📍</div>
+                            <div>
+                                <div id="text_access_label_address" class="text-xs md:text-sm text-gray-300 mb-1">ADDRESS</div>
+                                <p class="text-sm md:text-xl font-bold text-white" id="text_access_address">〒721-0942<br>広島県福山市引野町4丁目11-1</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 md:gap-4 bg-black/40 p-4 rounded-xl">
+                            <div class="bg-pop-green p-2 rounded-lg text-white text-sm md:text-base">⏰</div>
+                            <div>
+                                <div id="text_access_label_open" class="text-xs md:text-sm text-gray-300 mb-1">OPEN</div>
+                                <p class="text-base md:text-xl font-bold text-white" id="text_access_hours">10:00 - 21:00 <br class="md:hidden"><span class="text-xs md:text-sm text-gray-300">(最終受付 20:00)</span></p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 md:gap-4 bg-black/40 p-4 rounded-xl">
+                            <div class="bg-pop-pink p-2 rounded-lg text-white text-sm md:text-base">📞</div>
+                            <div>
+                                <div id="text_access_label_tel" class="text-xs md:text-sm text-gray-300 mb-1">TEL</div>
+                                <p class="text-xl md:text-3xl font-english font-bold text-pop-yellow tracking-widest" id="text_access_tel">080-1495-3533</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-full md:w-1/2 h-[300px] md:h-[400px] bg-gray-700/50 rounded-[2rem] md:rounded-[3rem] flex items-center justify-center relative overflow-hidden group border-[6px] md:border-8 border-white/20 shadow-xl md:shadow-2xl">
+                     <img id="img_access_map" src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition duration-700 transform group-hover:scale-110" alt="Map">
+                     <a href="https://www.google.com/maps/search/?api=1&query=広島県福山市引野町４丁目１１−１" target="_blank" rel="noopener noreferrer" class="absolute bg-pop-green text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-bold shadow-xl hover:scale-110 transition border-4 border-white animate-bounce text-sm md:text-base">
+                         Google Mapで開く 🗺️
+                     </a>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-black/80 backdrop-blur-md text-white py-10 text-center text-xs md:text-sm relative z-20 border-t-4 border-pop-green">
+            <div class="flex justify-center gap-8 md:gap-6 mb-6 md:mb-8">
+                <a href="#" id="footer_icon_insta" class="text-2xl hover:text-pop-green transition hover:scale-125 transform">📸</a>
+                <a href="#" id="footer_icon_twitter" class="text-2xl hover:text-pop-cyan transition hover:scale-125 transform">🐦</a>
+                <a href="#" id="footer_icon_line" class="text-2xl hover:text-green-500 transition hover:scale-125 transform">💬</a>
+            </div>
+            <p id="footer_copyright" class="font-bold text-gray-400 md:text-gray-300">© 2024 KB Park. All Rights Reserved.</p>
+        </footer>
+        
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
