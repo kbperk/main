@@ -47,8 +47,8 @@
     </a>
 
     <div id="loader">
-        <img src="kb君万歳.png" alt="Loading" id="loader_char" class="loader-character w-32 h-32 object-contain drop-shadow-2xl">
-        <div class="loader-shadow"></div>
+        <img src="kb君万歳.png" alt="Loading" id="loader_char" class="loader-character w-[250px] md:w-[400px] h-auto object-contain drop-shadow-2xl">
+        <div class="loader-shadow w-[150px] md:w-[250px]"></div>
         <div class="mt-12 text-center">
             <div class="wood-board relative inline-block px-8 py-4">
                 <div class="nail top-2 left-2"></div>
@@ -68,14 +68,23 @@
         <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
             <a href="#" id="nav_logo" class="text-3xl font-english font-bold text-pop-green tracking-wider hover:-rotate-12 transition transform inline-block">KB Park</a>
             
-            <div class="hidden md:flex gap-6 font-bold text-gray-700 text-sm">
-                <a href="#concept" id="nav_menu_concept" class="nav-item hover:text-pop-green hover:scale-110 transition inline-block">CONCEPT</a>
-                <a href="#gallery_section" id="nav_menu_gallery" class="nav-item hover:text-pop-green hover:scale-110 transition inline-block">GALLERY</a>
-                <a href="#price" id="nav_menu_price" class="nav-item hover:text-pop-green hover:scale-110 transition inline-block">PRICE</a>
-                <a href="#access" id="nav_menu_access" class="nav-item hover:text-pop-green hover:scale-110 transition inline-block">ACCESS</a>
-            </div>
+            <button id="hamburger_btn" class="text-pop-green text-4xl focus:outline-none hover:scale-110 transition-transform relative z-50">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
         </div>
     </nav>
+
+    <div id="mobile_menu" class="fixed inset-0 bg-pop-green/95 z-[45] flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-md">
+        <div class="flex flex-col gap-10 text-center text-3xl font-bold text-white">
+<a href="https://kbperk.github.io/staff-kanri/" class="menu-link hover:text-pop-yellow hover:scale-110 transition transform">スタッフ紹介</a>
+            <a href="#" class="menu-link hover:text-pop-yellow hover:scale-110 transition transform">教室</a>
+            <a href="#concept" class="menu-link hover:text-pop-yellow hover:scale-110 transition transform font-english tracking-wider">CONCEPT</a>
+            <a href="#price" class="menu-link hover:text-pop-yellow hover:scale-110 transition transform font-english tracking-wider">PRICE</a>
+            <a href="#access" class="menu-link hover:text-pop-yellow hover:scale-110 transition transform font-english tracking-wider">ACCESS</a>
+        </div>
+    </div>
 
     <main class="relative z-10 w-full">
         
@@ -416,12 +425,7 @@
             </div>
         </section>
 
-        <footer class="bg-black/80 backdrop-blur-md text-white py-10 text-center text-xs md:text-sm relative z-20 border-t-4 border-pop-green">
-            <div class="flex justify-center gap-8 md:gap-6 mb-6 md:mb-8">
-                <a href="#" id="footer_icon_insta" class="text-2xl hover:text-pop-green transition hover:scale-125 transform">📸</a>
-                <a href="#" id="footer_icon_twitter" class="text-2xl hover:text-pop-cyan transition hover:scale-125 transform">🐦</a>
-                <a href="#" id="footer_icon_line" class="text-2xl hover:text-green-500 transition hover:scale-125 transform">💬</a>
-            </div>
+        <footer class="bg-black/80 backdrop-blur-md text-white py-8 text-center text-xs md:text-sm relative z-20 border-t-4 border-pop-green">
             <p id="footer_copyright" class="font-bold text-gray-400 md:text-gray-300">© 2024 KB Park. All Rights Reserved.</p>
         </footer>
         
