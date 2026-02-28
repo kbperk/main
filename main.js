@@ -92,13 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isMenuOpen) {
                 mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
                 mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
-                // 修正: ✖アイコンに text-white を付与して白く表示する
-                hamburgerBtn.innerHTML = `<svg class="w-10 h-10 pointer-events-none text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                // 修正: ✖アイコンを w-8 h-8 のサイズにスリム化
+                hamburgerBtn.innerHTML = `<svg class="w-8 h-8 pointer-events-none text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>`;
             } else {
                 mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
                 mobileMenu.classList.add('opacity-0', 'pointer-events-none');
-                // 三本線アイコンに戻す
-                hamburgerBtn.innerHTML = `<svg class="w-10 h-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path></svg>`;
+                // 修正: 三本線アイコンも w-8 h-8 のサイズにスリム化
+                hamburgerBtn.innerHTML = `<svg class="w-8 h-8 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path></svg>`;
             }
         });
 
@@ -107,7 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 isMenuOpen = false;
                 mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
                 mobileMenu.classList.add('opacity-0', 'pointer-events-none');
-                hamburgerBtn.innerHTML = `<svg class="w-10 h-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path></svg>`;
+                // メニューを閉じた時も w-8 h-8 に戻す
+                hamburgerBtn.innerHTML = `<svg class="w-8 h-8 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path></svg>`;
             });
         });
     }
@@ -191,9 +192,10 @@ function initNavbar() {
     const nav = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
-            nav.classList.add('py-2', 'shadow-xl'); nav.classList.remove('py-3');
+            // 修正: スクロール時により細く（py-1）なるように変更
+            nav.classList.add('py-1', 'shadow-xl'); nav.classList.remove('py-2');
         } else {
-            nav.classList.remove('py-2', 'shadow-xl'); nav.classList.add('py-3');
+            nav.classList.remove('py-1', 'shadow-xl'); nav.classList.add('py-2');
         }
     });
     
