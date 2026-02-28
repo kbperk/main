@@ -32,6 +32,13 @@
                     animation: {
                         'spin-slow': 'spin 10s linear infinite',
                         'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'scroll-bg': 'scrollBg 30s linear infinite',
+                    },
+                    keyframes: {
+                        scrollBg: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        }
                     }
                 }
             }
@@ -60,16 +67,12 @@
         </div>
     </div>
 
-    <div class="fixed inset-0 z-[-2] pointer-events-none overflow-hidden opacity-20">
-        <div class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle,_#32D74B_3px,_transparent_3px)] bg-[length:40px_40px] animate-spin-slow"></div>
-    </div>
-
     <nav class="fixed top-0 w-full z-50 glass-panel border-b-4 border-pop-green transition-all duration-300" id="navbar">
         <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
             <a href="#" id="nav_logo" class="text-3xl font-english font-bold text-pop-green tracking-wider hover:-rotate-12 transition transform inline-block">KB Park</a>
             
-            <button id="hamburger_btn" class="text-pop-green text-4xl focus:outline-none hover:scale-110 transition-transform relative z-50">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <button id="hamburger_btn" class="text-pop-green text-4xl focus:outline-none hover:scale-110 transition-transform relative z-50 cursor-pointer p-2 -mr-2">
+                <svg class="w-10 h-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
@@ -88,13 +91,21 @@
 
     <main class="relative z-10 w-full">
         
-        <section class="relative w-full h-[75vh] md:h-[95vh] mt-20 pointer-events-none" id="hero_section">
-            <div class="absolute inset-0 z-0 pb-10">
+        <section class="relative w-full h-[75vh] md:h-[95vh] mt-20 pointer-events-none overflow-hidden" id="hero_section">
+            
+            <div class="absolute inset-0 z-0 opacity-100">
+                 <div class="absolute top-0 left-0 h-full w-[200%] flex animate-scroll-bg">
+                     <div class="w-1/2 h-full bg-[url('ヒーロー画像の背景.png')] bg-cover bg-center"></div>
+                     <div class="w-1/2 h-full bg-[url('ヒーロー画像の背景.png')] bg-cover bg-center"></div>
+                 </div>
+            </div>
+
+            <div class="absolute inset-0 z-10 pb-10">
                 <img id="img_hero" src="kbperkヒーロー画像.png" class="absolute inset-0 w-full h-full object-cover object-top invisible" alt="KB Park Hero">
                 
                 <div class="absolute inset-0 flex items-center justify-center">
                     <div class="relative w-full h-full max-w-5xl mx-auto">
-                        <div id="kb_stamp" class="absolute bottom-8 right-6 md:bottom-20 md:right-20 z-10 pointer-events-none invisible">
+                        <div id="kb_stamp" class="absolute bottom-8 right-6 md:bottom-20 md:right-20 z-20 pointer-events-none invisible">
                             <div class="stamp-design border-[6px] border-pop-red text-pop-red font-english font-black text-5xl md:text-7xl px-5 py-2 rounded-2xl opacity-90 mix-blend-multiply tracking-tighter">
                                 KB
                             </div>

@@ -4,29 +4,23 @@
 const CMS_API_URL = 'https://script.google.com/macros/s/xxxxxxxxxxxxxxxxx/exec'; // ★ここを書き換え
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. ローディング演出 & データ取得
-    // 最低でも1.5秒はローディングを見せて、ワクワクさせる
     const minLoadingTime = 1500;
     const startTime = Date.now();
 
-    // 並行してデータ取得開始
     let fetchPromise = Promise.resolve();
     if(CMS_API_URL.includes('script.google.com')) {
         fetchPromise = fetchSiteData();
     }
 
-    // 演出時間とデータ取得の両方が終わったら画面を開く
     Promise.all([
         fetchPromise,
         new Promise(resolve => setTimeout(resolve, minLoadingTime))
     ]).then(() => {
-        document.body.classList.add('loaded'); // カーテンを開ける
+        document.body.classList.add('loaded');
         
-        // ★ローディング明けのアニメーション
         if (typeof gsap !== 'undefined') {
             const tl = gsap.timeline();
             
-            // kb君が回転して消える
             tl.to("#loader_char", {
                 rotation: 360,
                 scale: 1.5,
@@ -36,10 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
             .to("#loader", {
                 yPercent: -100,
                 duration: 0.8,
-                ease: "power4.inOut"
+                ease: "none",
+                onComplete: () => {
+                    const loaderEl = document.getElementById('loader');
+                    if(loaderEl) loaderEl.style.display = 'none';
+                }
             })
             
-            // 1. ヒーロー画像が手前上空からドーンと降ってきてバウンド着地
             .set("#img_hero", { visibility: "visible" })
             .fromTo("#img_hero", 
                 { scale: 4, autoAlpha: 0, y: -300 }, 
@@ -47,15 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 "-=0.2" 
             )
             
-            // 2. 右下のKBハンコが巨大な状態からドカン！と叩きつけられる
             .set("#kb_stamp", { visibility: "visible", transformOrigin: "center center" })
             .fromTo("#kb_stamp",
                 { scale: 8, autoAlpha: 0 }, 
                 { scale: 1, autoAlpha: 1, duration: 0.2, ease: "power4.in" } 
             )
             
-            // 3. 叩きつけられた瞬間に画面全体をブルブルっと揺らす
-            // 【重要修正】bodyを揺らすと「ご予約はこちら」のfixedが解除されて消えてしまうため、mainタグを揺らします
             .to("main", {
                 x: () => gsap.utils.random(-15, 15),
                 y: () => gsap.utils.random(-15, 15),
@@ -66,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .set("main", { x: 0, y: 0 }) 
             
-            // 4. その後、いつものタイトル文字が踊りながら登場
             .fromTo("#text_hero_title_1", 
                 { y: 50, opacity: 0, autoAlpha: 0 }, 
                 { y: 0, opacity: 1, autoAlpha: 1, duration: 0.8, ease: "back.out(1.7)" }, 
@@ -79,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         }
         
-        // アニメーション初期化
         setTimeout(() => {
             initScrollAnimations();
             initDancingText(); 
@@ -87,9 +79,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     initNavbar();
+    
+    const hamburgerBtn = document.getElementById('hamburger_btn');
+    const mobileMenu = document.getElementById('mobile_menu');
+    const menuLinks = document.querySelectorAll('.menu-link');
+    let isMenuOpen = false;
+
+    if (hamburgerBtn && mobileMenu) {
+        hamburgerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            isMenuOpen = !isMenuOpen;
+            if (isMenuOpen) {
+                mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
+                mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
+                // 修正: ✖アイコンを text-white にして白く表示する
+                hamburgerBtn.innerHTML = `<svg class="w-10 h-10 pointer-events-none text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+            } else {
+                mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
+                mobileMenu.classList.add('opacity-0', 'pointer-events-none');
+                // 三本線アイコンに戻す
+                hamburgerBtn.innerHTML = `<svg class="w-10 h-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path></svg>`;
+            }
+        });
+
+        menuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                isMenuOpen = false;
+                mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
+                mobileMenu.classList.add('opacity-0', 'pointer-events-none');
+                hamburgerBtn.innerHTML = `<svg class="w-10 h-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path></svg>`;
+            });
+        });
+    }
 });
 
-/* --- 1. スクロールアニメーション --- */
 function initScrollAnimations() {
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
@@ -148,7 +171,6 @@ function initScrollAnimations() {
     }
 }
 
-/* --- 2. 踊る文字 (Dancing Text) --- */
 function initDancingText() {
     const textElements = document.querySelectorAll('.dancing-text');
     textElements.forEach(el => {
@@ -165,7 +187,6 @@ function initDancingText() {
     });
 }
 
-/* --- 3. ナビゲーション (スムーススクロール対応) --- */
 function initNavbar() {
     const nav = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
@@ -176,7 +197,6 @@ function initNavbar() {
         }
     });
     
-    // ナビゲーションのリンク先へスムースに飛ぶ機能
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -195,7 +215,6 @@ function initNavbar() {
     });
 }
 
-/* --- 4. CMSデータ反映 (自動縮小 & ギャラリー動的生成付き) --- */
 async function fetchSiteData() {
     try {
         const response = await fetch(CMS_API_URL);
@@ -213,7 +232,6 @@ async function fetchSiteData() {
 function applySiteData(dataMap) {
     Object.keys(dataMap).forEach(key => {
         
-        // ギャラリー配列データが届いた場合の特別処理
         if (key === 'gallery' && Array.isArray(dataMap[key])) {
             const container = document.getElementById('gallery_container');
             const section = document.getElementById('gallery_section');
@@ -256,25 +274,21 @@ function applySiteData(dataMap) {
 
         const info = dataMap[key];
 
-        // 1. テキスト反映 & 自動縮小
         if (info.text) {
             element.innerHTML = info.text;
             element.setAttribute('data-cms-text', info.text);
             adjustFontSizeToFit(element);
         }
 
-        // 2. クラスリセット
         element.classList.forEach(cls => {
             if (cls.startsWith('cms-style-') || cls.startsWith('cms-anim-')) {
                 element.classList.remove(cls);
             }
         });
 
-        // 3. スタイル & アニメーション
         if (info.style) element.classList.add(`cms-style-${info.style}`);
         if (info.anim) element.classList.add(`cms-anim-${info.anim}`);
 
-        // 4. 色 & サイズ
         element.style.color = info.color ? info.color : '';
         if (info.size) {
             element.style.fontSize = `${info.size}%`;
@@ -282,14 +296,10 @@ function applySiteData(dataMap) {
     });
 }
 
-/**
- * 要素の幅からはみ出している場合、フォントサイズを小さくする関数 (米粒化許容)
- */
 function adjustFontSizeToFit(element) {
     let fontSize = parseFloat(window.getComputedStyle(element).fontSize);
     const minSize = 8; 
     
-    // 安全装置: 100回以上のループはさせない
     let safety = 0;
     
     while (element.scrollWidth > element.clientWidth && fontSize > minSize && safety < 100) {
