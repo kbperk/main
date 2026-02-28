@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isMenuOpen) {
                 mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
                 mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
-                // 修正: ✖アイコンを text-white にして白く表示する
+                // 修正: ✖アイコンに text-white を付与して白く表示する
                 hamburgerBtn.innerHTML = `<svg class="w-10 h-10 pointer-events-none text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>`;
             } else {
                 mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');

@@ -95,13 +95,15 @@
             
             <div class="absolute inset-0 z-0 opacity-100">
                  <div class="absolute top-0 left-0 h-full w-[200%] flex animate-scroll-bg">
-                     <div class="w-1/2 h-full bg-[url('ヒーロー画像の背景.png')] bg-cover bg-center"></div>
-                     <div class="w-1/2 h-full bg-[url('ヒーロー画像の背景.png')] bg-cover bg-center"></div>
+                     <div class="w-1/2 h-full bg-[url('ヒーロー画像の背景.png')] bg-[size:100%_100%] bg-no-repeat"></div>
+                     <div class="w-1/2 h-full bg-[url('ヒーロー画像の背景.png')] bg-[size:100%_100%] bg-no-repeat"></div>
                  </div>
             </div>
 
+            <div class="absolute inset-0 z-[5] bg-white/40 backdrop-blur-[3px]"></div>
+
             <div class="absolute inset-0 z-10 pb-10">
-                <img id="img_hero" src="kbperkヒーロー画像.png" class="absolute inset-0 w-full h-full object-cover object-top invisible" alt="KB Park Hero">
+                <img id="img_hero" src="kbperkヒーロー画像.png" class="absolute inset-0 w-full h-full object-contain object-top invisible" alt="KB Park Hero">
                 
                 <div class="absolute inset-0 flex items-center justify-center">
                     <div class="relative w-full h-full max-w-5xl mx-auto">
