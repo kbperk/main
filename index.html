@@ -8,7 +8,8 @@
     <meta name="description" content="広島県福山市に地域密着型の最新トランポリンパークが誕生！競技用トランポリンやウォールトランポリンなど本格設備を完備。初めての方も、親子で一緒に遊びたい方も大歓迎。大人も子供も夢中になれる遊び場です！">
     
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://kbperk.github.io/User/"> <meta property="og:title" content="KB Park | 広島・福山のトランポリンパーク！大人も子供に！子供は夢中に！夢中を楽しむ！！">
+    <meta property="og:url" content="https://kbperk.github.io/User/"> 
+    <meta property="og:title" content="KB Park | 広島・福山のトランポリンパーク！大人も子供に！子供は夢中に！夢中を楽しむ！！">
     <meta property="og:description" content="広島県福山市に地域密着型の最新トランポリンパークが誕生！競技用やウォールなど本格設備を完備。初めての方も大歓迎！">
     <meta property="og:image" content="https://kbperk.github.io/main/KBPERK_%E7%9C%8B%E6%9D%BF.jpg">
     <meta property="og:site_name" content="KB Park">
@@ -49,6 +50,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&family=Fredoka:wght@600&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
     
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -131,19 +135,19 @@
 
     <main class="relative z-10 w-full">
         
-        <section class="relative w-full h-[100vh] md:h-[95vh] mt-20 pointer-events-none overflow-hidden" id="hero_section">
+        <section class="relative w-full h-[85vh] md:h-[100vh] mt-20 pointer-events-none overflow-hidden" id="hero_section">
             
             <div class="absolute inset-0 z-0 opacity-100">
-                 <div class="absolute top-0 left-0 h-full w-max flex animate-scroll-bg">
-                     <img src="ヒーロー画像の背景.png" class="h-full w-auto min-w-[100vw] max-w-none object-cover" alt="">
-                     <img src="ヒーロー画像の背景.png" class="h-full w-auto min-w-[100vw] max-w-none object-cover" alt="">
+                 <div class="absolute top-0 left-0 h-full w-[200%] flex animate-scroll-bg">
+                     <div class="w-1/2 h-full bg-[url('ヒーロー画像の背景.png')] bg-cover bg-center bg-no-repeat"></div>
+                     <div class="w-1/2 h-full bg-[url('ヒーロー画像の背景.png')] bg-cover bg-center bg-no-repeat"></div>
                  </div>
             </div>
 
             <div class="absolute inset-0 z-[5] bg-white/30 backdrop-blur-[2px]"></div>
 
             <div class="absolute inset-0 z-10 pb-10">
-                <img id="img_hero" src="kbperkヒーロー画像.png" class="absolute inset-0 w-full h-full object-contain object-top invisible" alt="KB Park Hero">
+                <img id="img_hero" src="kbperkヒーロー画像.png" class="absolute inset-0 w-full h-full object-cover object-center invisible" alt="KB Park Hero">
                 
                 <div class="absolute inset-0 flex items-center justify-center">
                     <div class="relative w-full h-full max-w-5xl mx-auto">
@@ -157,6 +161,26 @@
             </div>
         </section>
 
+        <section class="container mx-auto px-4 my-24 relative z-20" id="news-section">
+            
+            <div id="marquee-wrapper" class="js-scroll fade-up glass-panel-light bg-white/70 backdrop-blur-md rounded-full shadow-xl p-2 border-4 border-pop-yellow flex flex-col md:flex-row items-center gap-2 hover:scale-105 transition-transform duration-300 cursor-pointer mb-8" style="display: none;">
+                <div id="text_news_badge" class="bg-pop-green text-white font-bold px-6 py-2 rounded-full shadow-md animate-pulse whitespace-nowrap text-sm md:text-base">NEWS</div>
+                <div class="flex-1 w-full overflow-hidden px-4">
+                    <div class="marquee-text text-gray-700 font-bold text-sm md:text-lg">
+                        <span id="text_news_marquee"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="slider-wrapper" class="js-scroll fade-up" style="display: none;">
+                <div class="swiper newsSwiper pb-10">
+                    <div class="swiper-wrapper" id="news-slider-track">
+                        </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+
+        </section>
         <section class="relative py-20 my-24 md:my-40 glass-panel overflow-hidden text-center">
             <div class="absolute top-10 left-10 text-6xl opacity-30 animate-bounce delay-100 gs-float">🌿</div>
             <div class="absolute top-20 right-10 text-6xl opacity-30 animate-bounce delay-700 gs-float">✨</div>
@@ -181,24 +205,6 @@
                     <span class="text-pop-red text-2xl md:text-3xl" id="text_hero_desc_highlight">地域密着型</span>
                     <span id="text_hero_desc_2">のトランポリンパーク誕生</span>
                 </p>
-            </div>
-        </section>
-
-        <section class="container mx-auto px-6 my-24 md:my-40 relative z-20">
-            <div class="js-scroll fade-up glass-panel-light bg-white/70 backdrop-blur-md rounded-full shadow-2xl p-2 border-4 border-pop-yellow flex flex-col md:flex-row items-center gap-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
-                <div id="text_news_badge" class="bg-pop-green text-white font-bold px-6 py-2 rounded-full shadow-md animate-pulse whitespace-nowrap text-sm md:text-base">NEWS</div>
-                <div class="flex-1 w-full overflow-hidden px-4">
-                    <div class="marquee-text text-gray-700 font-bold text-sm md:text-lg">
-                        <span id="text_news_marquee">
-                            <span>【重要】土日祝は50分、平日はたっぷり60分遊べます！</span>
-                            <span class="mx-8 text-pop-cyan">★</span>
-                            <span>お得な会員家族割スタート！</span>
-                        </span>
-                    </div>
-                </div>
-                <div class="bg-pop-cyan text-white rounded-full p-2 mr-2 hidden md:block">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-                </div>
             </div>
         </section>
 

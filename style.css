@@ -18,6 +18,17 @@ body {
     margin: 0;
 }
 
+/* === Swiper用 ドットのカスタマイズ (今回追加分) === */
+.swiper-pagination-bullet {
+    background: white !important;
+    opacity: 0.5 !important;
+}
+.swiper-pagination-bullet-active {
+    background: #32D74B !important;
+    opacity: 1 !important;
+    transform: scale(1.3);
+}
+
 /* === グラスモーフィズム（ガラスの透け感）=== */
 .glass-panel {
     background: rgba(240, 255, 244, 0.05); 
@@ -39,7 +50,6 @@ body {
 }
 
 /* === 楽しいローディング演出 === */
-/* GSAPによる非表示処理と競合しないよう transition を削除し、念のため pointer-events を設定 */
 #loader {
     position: fixed; inset: 0; z-index: 9999;
     background-color: #32D74B;
@@ -91,6 +101,10 @@ body {
     text-shadow: 3px 3px 0px #000;
 }
 
+/* =========================================================
+   ▼▼▼ 過去に作り込んだCMS連動用クラス (完全復活) ▼▼▼
+   ========================================================= */
+
 /* === CMS制御用プリセット (style 1~10) === */
 .cms-style-1 { font-family: 'Zen Maru Gothic', sans-serif; }
 .cms-style-2 { font-family: 'Fredoka', sans-serif; color: #fff !important; text-shadow: 0 0 5px #fff, 0 0 10px #32D74B, 0 0 20px #32D74B; letter-spacing: 0.1em; }
@@ -125,10 +139,10 @@ body {
 @keyframes shake-hard { 0% { transform: translate(0, 0); } 25% { transform: translate(-2px, 2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, -2px); } 100% { transform: translate(0, 0); } }
 @keyframes sway { 0% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } 100% { transform: rotate(-5deg); } }
 @keyframes spin-slow { to { transform: rotate(360deg); } }
-@keyframes fade-in-up { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
-@keyframes slide-in-left { 0% { opacity: 0; transform: translateX(-100px); } 100% { opacity: 1; transform: translateX(0); } }
-@keyframes jelly { 0%, 100% { transform: scale(1, 1); } 25% { transform: scale(0.9, 1.1); } 50% { transform: scale(1.1, 0.9); } 75% { transform: scale(0.95, 1.05); } }
-@keyframes pop-in { 0% { opacity: 0; transform: scale(0); } 70% { transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
+
+/* =========================================================
+   ▲▲▲ 過去に作り込んだCMS連動用クラス (完全復活) ▲▲▲
+   ========================================================= */
 
 /* === 共通パーツ === */
 .wave-separator { position: absolute; left: 0; width: 100%; overflow: hidden; line-height: 0; z-index: 5; }
@@ -166,6 +180,10 @@ body {
 .js-scroll.is-active.slide-right { animation: slide-in-right 0.8s forwards; }
 .js-scroll.is-active.fade-up { animation: fade-in-up 0.8s forwards; }
 @keyframes slide-in-right { 0% { opacity: 0; transform: translateX(100px); } 100% { opacity: 1; transform: translateX(0); } }
+@keyframes slide-in-left { 0% { opacity: 0; transform: translateX(-100px); } 100% { opacity: 1; transform: translateX(0); } }
+@keyframes fade-in-up { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes jelly { 0%, 100% { transform: scale(1, 1); } 25% { transform: scale(0.9, 1.1); } 50% { transform: scale(1.1, 0.9); } 75% { transform: scale(0.95, 1.05); } }
+@keyframes pop-in { 0% { opacity: 0; transform: scale(0); } 70% { transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
 
 /* ギャラリー用のカード3D装飾 */
 .area-card-3d { perspective: 1000px; }

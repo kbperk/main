@@ -3,7 +3,7 @@
    ========================================== */
 const CMS_API_URL = 'https://script.google.com/macros/s/xxxxxxxxxxxxxxxxx/exec'; // ★ここを書き換え（元のスプレッドシート用）
 
-// お知らせ(NEWS) JSONの取得元URL（★ここを news-info に修正しました）
+// お知らせ(NEWS) JSONの取得元URL
 const NEWS_JSON_URL = 'https://kbperk.github.io/news-info/newsData.json';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -134,19 +134,20 @@ async function fetchNewsData() {
     }
 }
 
+// ▼ 修正：YouTubeを「音声なし」「自動再生」「ループ」の背景動画化する ▼
 function getSafeEmbedUrl(url) {
     if (!url) return "";
-    if (url.includes("youtube.com/embed/")) return url;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
     const match = url.match(regExp);
     if (match && match[2].length === 11) {
-        return `https://www.youtube.com/embed/${match[2]}?rel=0`;
+        const vid = match[2];
+        // autoplay=1 (自動再生), mute=1 (ミュート必須), playsinline=1 (スマホ全画面回避), loop=1 & playlist=VID (ループ再生), controls=0 (操作バー非表示)
+        return `https://www.youtube.com/embed/${vid}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${vid}&controls=0&rel=0`;
     }
     return url; 
 }
 
 function renderNewsSection(data) {
-    // 1. マーキーの処理
     const marqueeWrapper = document.getElementById('marquee-wrapper');
     const marqueeText = document.getElementById('text_news_marquee');
     if (data.marquee && data.marquee.is_public && data.marquee.text) {
@@ -156,11 +157,13 @@ function renderNewsSection(data) {
         marqueeWrapper.style.display = 'none';
     }
 
-    // 2. ロータリー式スライダーの処理
     const sliderWrapper = document.getElementById('slider-wrapper');
     const sliderTrack = document.getElementById('news-slider-track');
     
-    const publicItems = (data.items || []).filter(item => item.is_public);
+    // 画像またはYouTube動画が設定されていて、かつ「公開」になっているものだけを抽出
+    const publicItems = (data.items || []).filter(item => {
+        return item.is_public && (item.image || item.youtube_url);
+    });
     
     if (publicItems.length > 0) {
         sliderWrapper.style.display = 'block';
@@ -170,19 +173,21 @@ function renderNewsSection(data) {
             let mediaHtml = '';
             if (item.youtube_url) {
                 const safeUrl = getSafeEmbedUrl(item.youtube_url);
-                mediaHtml = `<iframe src="${safeUrl}" class="absolute inset-0 w-full h-full object-cover" frameborder="0" allowfullscreen></iframe>`;
+                // 動画: pointer-events-none でタップによる停止を防ぎ、背景動画として見せる
+                mediaHtml = `<iframe src="${safeUrl}" class="absolute inset-0 w-full h-full object-cover pointer-events-none" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
             } else if (item.image) {
-                mediaHtml = `<img src="${item.image}" class="absolute inset-0 w-full h-full object-cover">`;
-            } else {
-                mediaHtml = `<div class="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">No Image</div>`;
+                // 画像: コンテナにぴったり収まるように object-contain
+                mediaHtml = `<img src="${item.image}" class="absolute inset-0 w-full h-full object-contain">`;
             }
             
+            // ▼ 修正：高さを16:9のアスペクト比に固定して比率崩れを防ぐ（背景を黒にして際立たせる） ▼
             html += `
-                <div class="swiper-slide bg-white rounded-2xl shadow-lg overflow-hidden border-4 border-pop-yellow flex flex-col h-auto">
-                    <div class="relative w-full pb-[56.25%] bg-gray-100"> ${mediaHtml}
+                <div class="swiper-slide bg-black flex flex-col h-auto border-y-[6px] md:border-y-8 border-pop-green box-border overflow-hidden">
+                    <div class="py-2 md:py-3 text-center bg-white relative z-10 shadow-sm">
+                        <h3 class="font-bold text-gray-800 text-sm md:text-lg leading-snug tracking-wider">${item.title || "お知らせ"}</h3>
                     </div>
-                    <div class="p-4 text-center bg-white flex-1 flex items-center justify-center">
-                        <h3 class="font-bold text-gray-800 text-sm md:text-base leading-snug">${item.title || "お知らせ"}</h3>
+                    <div class="relative w-full aspect-video bg-black flex items-center justify-center"> 
+                        ${mediaHtml}
                     </div>
                 </div>
             `;
@@ -190,27 +195,36 @@ function renderNewsSection(data) {
         
         sliderTrack.innerHTML = html;
 
+        const isSingle = publicItems.length === 1;
+
         if (typeof Swiper !== 'undefined') {
             new Swiper(".newsSwiper", {
-                loop: publicItems.length > 1, 
-                slidesPerView: 1.2, 
+                loop: !isSingle, 
+                // スライド数が少ない時のループバグを防止するための設定
+                loopedSlides: publicItems.length,
+                watchSlidesProgress: true,
+                autoplay: isSingle ? false : {
+                    delay: 3500, 
+                    disableOnInteraction: false, 
+                },
+                slidesPerView: isSingle ? 1 : 1.15, 
                 centeredSlides: true, 
-                spaceBetween: 16, 
+                spaceBetween: 0, 
                 pagination: {
                     el: ".swiper-pagination",
                     clickable: true,
                 },
                 breakpoints: {
                     768: {
-                        slidesPerView: 3, 
-                        centeredSlides: false,
-                        spaceBetween: 24,
+                        slidesPerView: isSingle ? 1 : 2.2, 
+                        centeredSlides: true,
+                        spaceBetween: 0,
                     }
                 }
             });
         }
     } else {
-        sliderWrapper.style.display = 'none';
+        sliderWrapper.style.display = 'none'; 
     }
 }
 // --- ▲ お知らせデータのフェッチ処理 ここまで ▲ ---
