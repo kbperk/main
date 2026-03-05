@@ -119,18 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-
-    // スムーズなスクロールのためのCSSを自動追加
-    if (!document.getElementById('swiper-linear-style')) {
-        const style = document.createElement('style');
-        style.id = 'swiper-linear-style';
-        style.innerHTML = `
-            .newsSwiper .swiper-wrapper {
-                transition-timing-function: linear !important;
-            }
-        `;
-        document.head.appendChild(style);
-    }
 });
 
 // --- ▼ お知らせ(NEWS)データのフェッチとUI構築 ▼ ---
@@ -146,16 +134,12 @@ async function fetchNewsData() {
     }
 }
 
-// YouTubeを「音声なし」「自動再生」「ループ」の背景動画化する
-function getSafeEmbedUrl(url) {
-    if (!url) return "";
+// ▼ 追加：YouTubeのURLから動画IDだけを確実に抜き出す関数 ▼
+function getYouTubeId(url) {
+    if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
     const match = url.match(regExp);
-    if (match && match[2].length === 11) {
-        const vid = match[2];
-        return `https://www.youtube.com/embed/${vid}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${vid}&controls=0&rel=0&showinfo=0`;
-    }
-    return url; 
+    return (match && match[2].length === 11) ? match[2] : null;
 }
 
 function renderNewsSection(data) {
@@ -171,6 +155,7 @@ function renderNewsSection(data) {
     const sliderWrapper = document.getElementById('slider-wrapper');
     const sliderTrack = document.getElementById('news-slider-track');
     
+    // 画像またはYouTube動画が設定されていて、かつ「公開」になっているものだけを抽出
     const publicItems = (data.items || []).filter(item => {
         return item.is_public && (item.image || item.youtube_url);
     });
@@ -178,17 +163,11 @@ function renderNewsSection(data) {
     if (publicItems.length > 0) {
         sliderWrapper.style.display = 'block';
         
-        // ★ 修正: どのデバイスでも「完全に左右画面いっぱい」に広げる最強の指定
+        // ▼ デザインの融合：画面いっぱいに広げる指定 ▼
         if (sliderWrapper.parentElement) {
             const parent = sliderWrapper.parentElement;
-            
-            // クラスを一旦リセットして再構築
             parent.className = ''; 
-            
-            // 共通のglass-panelクラスを付与し、上下の余白を設定
-            parent.classList.add('glass-panel', 'py-6', 'md:py-10', 'shadow-2xl', 'mt-8', 'mb-12');
-            
-            // 画面幅100vwに強制拡張し、中央にピタッと合わせる魔法のコード
+            parent.classList.add('glass-panel', 'py-6', 'md:py-10', 'shadow-2xl', 'mt-8', 'mb-12', 'relative');
             parent.style.width = '100vw';
             parent.style.maxWidth = '100vw';
             parent.style.marginLeft = 'calc(50% - 50vw)';
@@ -197,26 +176,26 @@ function renderNewsSection(data) {
         }
 
         let html = '';
-        const isSingle = publicItems.length === 1;
-        const displayItems = [...publicItems];
         
-        displayItems.forEach(item => {
+        publicItems.forEach(item => {
             let mediaHtml = '';
             if (item.youtube_url) {
-                const safeUrl = getSafeEmbedUrl(item.youtube_url);
-                // ★ 修正: 動画の上に透明なシールドを張り、タッチイベントを完全に遮断（動画上で止まる問題を解決）
-                mediaHtml = `
-                    <div class="absolute inset-0 w-full h-full pointer-events-none">
-                        <iframe src="${safeUrl}" class="w-full h-full border-0 pointer-events-none" frameborder="0" allow="autoplay; muted; fullscreen; picture-in-picture" allowfullscreen></iframe>
-                    </div>
-                    <div class="absolute inset-0 z-20 w-full h-full bg-transparent"></div>
-                `;
+                const vid = getYouTubeId(item.youtube_url);
+                if (vid) {
+                    // ▼ 修正：最初は絶対に動画を置かず、「サムネイル画像」だけを置いてエラーを回避する ▼
+                    mediaHtml = `
+                        <div class="yt-dynamic-container absolute inset-0 w-full h-full bg-black" data-vid="${vid}">
+                            <img src="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${vid}/hqdefault.jpg';" class="absolute inset-0 w-full h-full object-cover opacity-60">
+                        </div>
+                    `;
+                }
             } else if (item.image) {
                 mediaHtml = `<img src="${item.image}" class="absolute inset-0 w-full h-full object-contain">`;
             }
             
+            // ▼ デザインの融合：高さ h-[40vh] md:h-[55vh] で1.5倍化 ▼
             html += `
-                <div class="swiper-slide bg-black flex flex-col h-auto border-y-[6px] md:border-y-8 border-pop-green box-border overflow-hidden" style="transform: translateZ(0);">
+                <div class="swiper-slide bg-black flex flex-col h-auto border-y-[6px] md:border-y-8 border-pop-green box-border overflow-hidden">
                     <div class="py-2 md:py-3 text-center bg-white relative z-10 shadow-sm">
                         <h3 class="font-bold text-gray-800 text-sm md:text-lg leading-snug tracking-wider">${item.title || "お知らせ"}</h3>
                     </div>
@@ -226,45 +205,92 @@ function renderNewsSection(data) {
                 </div>
             `;
         });
-
-        // ★ 追加: YouTubeエラーを回避しつつドラム式を擬似再現するための「安全なダミー（分身）」
-        // 1枚目の要素を最後にもう一度配置し、それに到達した瞬間に0秒で1枚目にワープ（すり替え）させます。
-        if (!isSingle && displayItems.length > 0) {
-            const firstItem = displayItems[0];
-            let dummyMediaHtml = '';
-            if (firstItem.image) {
-                dummyMediaHtml = `<img src="${firstItem.image}" class="absolute inset-0 w-full h-full object-contain">`;
-            } else {
-                // 1枚目が動画の場合、ここでiframeを複製するとエラーになるため、黒背景のダミーを置く
-                dummyMediaHtml = `<div class="absolute inset-0 w-full h-full bg-gray-900 flex items-center justify-center text-white font-bold tracking-widest text-xl">▶ NOW PLAYING...</div>`;
-            }
-            
-            html += `
-                <div class="swiper-slide bg-black flex flex-col h-auto border-y-[6px] md:border-y-8 border-pop-green box-border overflow-hidden" style="transform: translateZ(0);">
-                    <div class="py-2 md:py-3 text-center bg-white relative z-10 shadow-sm">
-                        <h3 class="font-bold text-gray-800 text-sm md:text-lg leading-snug tracking-wider">${firstItem.title || "お知らせ"}</h3>
-                    </div>
-                    <div class="relative w-full h-[40vh] md:h-[55vh] bg-black flex items-center justify-center"> 
-                        ${dummyMediaHtml}
-                    </div>
-                </div>
-            `;
-        }
         
         sliderTrack.innerHTML = html;
 
+        const isSingle = publicItems.length === 1;
+
         if (typeof Swiper !== 'undefined') {
+            
+            // ▼ デザインの融合：矢印ボタンの生成 ▼
+            const swiperContainer = document.querySelector('.newsSwiper');
+            if (swiperContainer && !document.querySelector('.news-swiper-button-next')) {
+                const nextBtn = document.createElement('div');
+                nextBtn.className = 'swiper-button-next news-swiper-button-next';
+                const prevBtn = document.createElement('div');
+                prevBtn.className = 'swiper-button-prev news-swiper-button-prev';
+                swiperContainer.appendChild(nextBtn);
+                swiperContainer.appendChild(prevBtn);
+
+                if (!document.getElementById('news-arrow-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'news-arrow-style';
+                    style.innerHTML = `
+                        .news-swiper-button-next, .news-swiper-button-prev {
+                            color: #32D74B !important; 
+                            background: rgba(255, 255, 255, 0.9);
+                            width: 44px !important;
+                            height: 44px !important;
+                            border-radius: 50%;
+                            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+                            border: 3px solid #fff;
+                        }
+                        .news-swiper-button-next::after, .news-swiper-button-prev::after {
+                            font-size: 20px !important;
+                            font-weight: 900;
+                        }
+                        .swiper-button-disabled {
+                            opacity: 0.3 !important;
+                            pointer-events: none;
+                        }
+                        .news-swiper-button-next { right: 10px !important; }
+                        .news-swiper-button-prev { left: 10px !important; }
+                        @media (min-width: 768px) {
+                            .news-swiper-button-next { right: 30px !important; }
+                            .news-swiper-button-prev { left: 30px !important; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+
+            // ▼ 追加：真ん中に来た時だけ動画を生成する専用関数 ▼
+            function injectYouTube(swiper) {
+                // 1. 全ての動画枠を一旦リセット（画像に戻し、動画を破壊してエラーを防ぐ）
+                document.querySelectorAll('.yt-dynamic-container').forEach(container => {
+                    const vid = container.getAttribute('data-vid');
+                    container.innerHTML = `<img src="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${vid}/hqdefault.jpg';" class="absolute inset-0 w-full h-full object-cover opacity-60">`;
+                });
+
+                // 2. 現在「真ん中（アクティブ）」にあるスライドを取得
+                const activeSlide = swiper.slides[swiper.activeIndex];
+                if (!activeSlide) return;
+
+                // 3. 真ん中のスライドがYouTubeなら、動画(iframe)を注入して自動再生させる
+                const ytContainer = activeSlide.querySelector('.yt-dynamic-container');
+                if (ytContainer) {
+                    const vid = ytContainer.getAttribute('data-vid');
+                    // pointer-events-none を付けることで、動画の上でもスワイプやタップ停止が反応するようにします
+                    ytContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${vid}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${vid}&controls=0&rel=0" class="absolute inset-0 w-full h-full object-cover pointer-events-none" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                }
+            }
+
+            // スライダーの初期化
             const newsSwiper = new Swiper(".newsSwiper", {
-                loop: false, // ★ 修正: Swiperの標準ループは絶対に使わない（YouTubeエラーの元凶）
-                speed: 12000, 
+                loop: !isSingle, // 夢のドラム式を開放！
+                loopedSlides: publicItems.length,
+                watchSlidesProgress: true,
                 autoplay: isSingle ? false : {
-                    delay: 0,
+                    delay: 3500, // 自動で左にスライドしていく設定を維持
                     disableOnInteraction: false, 
                 },
                 slidesPerView: isSingle ? 1 : 1.15, 
                 centeredSlides: true, 
                 spaceBetween: 0, 
-                allowTouchMove: true,
+                navigation: {
+                    nextEl: '.news-swiper-button-next',
+                    prevEl: '.news-swiper-button-prev',
+                },
                 pagination: {
                     el: ".swiper-pagination",
                     clickable: true,
@@ -277,23 +303,24 @@ function renderNewsSection(data) {
                     }
                 },
                 on: {
-                    // ★ 自作の「すり替え」処理でドラム式を再現
-                    slideChange: function () {
-                        // 現在アクティブなのが「自作のダミースライド（一番最後）」になったら
-                        if (this.activeIndex === displayItems.length) {
-                            // アニメーションなし（0ミリ秒）で本物の1枚目にワープ！
-                            this.slideTo(0, 0);
-                        }
+                    // スライダーが作られた時と、スライドが切り替わった時に動的生成を発動
+                    init: function () {
+                        injectYouTube(this);
+                    },
+                    slideChangeTransitionEnd: function () {
+                        injectYouTube(this);
                     }
                 }
             });
 
-            // タップ（クリック）し続けている間だけ止まる仕掛け
+            // ▼ 追加：画面をタップ（押さえている）間は、スライドを停止し動画だけを再生し続ける処理 ▼
             if (!isSingle) {
                 const swiperArea = document.querySelector('.newsSwiper');
                 if (swiperArea) {
+                    // スマホ（指）用
                     swiperArea.addEventListener('touchstart', () => newsSwiper.autoplay.stop(), {passive: true});
                     swiperArea.addEventListener('touchend', () => newsSwiper.autoplay.start(), {passive: true});
+                    // PC（マウス）用
                     swiperArea.addEventListener('mousedown', () => newsSwiper.autoplay.stop());
                     swiperArea.addEventListener('mouseup', () => newsSwiper.autoplay.start());
                     swiperArea.addEventListener('mouseleave', () => newsSwiper.autoplay.start());
