@@ -119,6 +119,18 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // スムーズなスクロールのためのCSSを自動追加
+    if (!document.getElementById('swiper-linear-style')) {
+        const style = document.createElement('style');
+        style.id = 'swiper-linear-style';
+        style.innerHTML = `
+            .newsSwiper .swiper-wrapper {
+                transition-timing-function: linear !important;
+            }
+        `;
+        document.head.appendChild(style);
+    }
 });
 
 // --- ▼ お知らせ(NEWS)データのフェッチとUI構築 ▼ ---
@@ -134,15 +146,14 @@ async function fetchNewsData() {
     }
 }
 
-// ▼ 修正：YouTubeを「音声なし」「自動再生」「ループ」の背景動画化する ▼
+// YouTubeを「音声なし」「自動再生」「ループ」の背景動画化する
 function getSafeEmbedUrl(url) {
     if (!url) return "";
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
     const match = url.match(regExp);
     if (match && match[2].length === 11) {
         const vid = match[2];
-        // autoplay=1 (自動再生), mute=1 (ミュート必須), playsinline=1 (スマホ全画面回避), loop=1 & playlist=VID (ループ再生), controls=0 (操作バー非表示)
-        return `https://www.youtube.com/embed/${vid}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${vid}&controls=0&rel=0`;
+        return `https://www.youtube.com/embed/${vid}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${vid}&controls=0&rel=0&showinfo=0`;
     }
     return url; 
 }
@@ -160,71 +171,140 @@ function renderNewsSection(data) {
     const sliderWrapper = document.getElementById('slider-wrapper');
     const sliderTrack = document.getElementById('news-slider-track');
     
-    // 画像またはYouTube動画が設定されていて、かつ「公開」になっているものだけを抽出
     const publicItems = (data.items || []).filter(item => {
         return item.is_public && (item.image || item.youtube_url);
     });
     
     if (publicItems.length > 0) {
         sliderWrapper.style.display = 'block';
-        let html = '';
         
-        publicItems.forEach(item => {
+        // ★ 修正: どのデバイスでも「完全に左右画面いっぱい」に広げる最強の指定
+        if (sliderWrapper.parentElement) {
+            const parent = sliderWrapper.parentElement;
+            
+            // クラスを一旦リセットして再構築
+            parent.className = ''; 
+            
+            // 共通のglass-panelクラスを付与し、上下の余白を設定
+            parent.classList.add('glass-panel', 'py-6', 'md:py-10', 'shadow-2xl', 'mt-8', 'mb-12');
+            
+            // 画面幅100vwに強制拡張し、中央にピタッと合わせる魔法のコード
+            parent.style.width = '100vw';
+            parent.style.maxWidth = '100vw';
+            parent.style.marginLeft = 'calc(50% - 50vw)';
+            parent.style.marginRight = 'calc(50% - 50vw)';
+            parent.style.boxSizing = 'border-box';
+        }
+
+        let html = '';
+        const isSingle = publicItems.length === 1;
+        const displayItems = [...publicItems];
+        
+        displayItems.forEach(item => {
             let mediaHtml = '';
             if (item.youtube_url) {
                 const safeUrl = getSafeEmbedUrl(item.youtube_url);
-                // 動画: pointer-events-none でタップによる停止を防ぎ、背景動画として見せる
-                mediaHtml = `<iframe src="${safeUrl}" class="absolute inset-0 w-full h-full object-cover pointer-events-none" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                // ★ 修正: 動画の上に透明なシールドを張り、タッチイベントを完全に遮断（動画上で止まる問題を解決）
+                mediaHtml = `
+                    <div class="absolute inset-0 w-full h-full pointer-events-none">
+                        <iframe src="${safeUrl}" class="w-full h-full border-0 pointer-events-none" frameborder="0" allow="autoplay; muted; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="absolute inset-0 z-20 w-full h-full bg-transparent"></div>
+                `;
             } else if (item.image) {
-                // 画像: コンテナにぴったり収まるように object-contain
                 mediaHtml = `<img src="${item.image}" class="absolute inset-0 w-full h-full object-contain">`;
             }
             
-            // ▼ 修正：高さを16:9のアスペクト比に固定して比率崩れを防ぐ（背景を黒にして際立たせる） ▼
             html += `
-                <div class="swiper-slide bg-black flex flex-col h-auto border-y-[6px] md:border-y-8 border-pop-green box-border overflow-hidden">
+                <div class="swiper-slide bg-black flex flex-col h-auto border-y-[6px] md:border-y-8 border-pop-green box-border overflow-hidden" style="transform: translateZ(0);">
                     <div class="py-2 md:py-3 text-center bg-white relative z-10 shadow-sm">
                         <h3 class="font-bold text-gray-800 text-sm md:text-lg leading-snug tracking-wider">${item.title || "お知らせ"}</h3>
                     </div>
-                    <div class="relative w-full aspect-video bg-black flex items-center justify-center"> 
+                    <div class="relative w-full h-[40vh] md:h-[55vh] bg-black flex items-center justify-center"> 
                         ${mediaHtml}
                     </div>
                 </div>
             `;
         });
+
+        // ★ 追加: YouTubeエラーを回避しつつドラム式を擬似再現するための「安全なダミー（分身）」
+        // 1枚目の要素を最後にもう一度配置し、それに到達した瞬間に0秒で1枚目にワープ（すり替え）させます。
+        if (!isSingle && displayItems.length > 0) {
+            const firstItem = displayItems[0];
+            let dummyMediaHtml = '';
+            if (firstItem.image) {
+                dummyMediaHtml = `<img src="${firstItem.image}" class="absolute inset-0 w-full h-full object-contain">`;
+            } else {
+                // 1枚目が動画の場合、ここでiframeを複製するとエラーになるため、黒背景のダミーを置く
+                dummyMediaHtml = `<div class="absolute inset-0 w-full h-full bg-gray-900 flex items-center justify-center text-white font-bold tracking-widest text-xl">▶ NOW PLAYING...</div>`;
+            }
+            
+            html += `
+                <div class="swiper-slide bg-black flex flex-col h-auto border-y-[6px] md:border-y-8 border-pop-green box-border overflow-hidden" style="transform: translateZ(0);">
+                    <div class="py-2 md:py-3 text-center bg-white relative z-10 shadow-sm">
+                        <h3 class="font-bold text-gray-800 text-sm md:text-lg leading-snug tracking-wider">${firstItem.title || "お知らせ"}</h3>
+                    </div>
+                    <div class="relative w-full h-[40vh] md:h-[55vh] bg-black flex items-center justify-center"> 
+                        ${dummyMediaHtml}
+                    </div>
+                </div>
+            `;
+        }
         
         sliderTrack.innerHTML = html;
 
-        const isSingle = publicItems.length === 1;
-
         if (typeof Swiper !== 'undefined') {
-            new Swiper(".newsSwiper", {
-                loop: !isSingle, 
-                // スライド数が少ない時のループバグを防止するための設定
-                loopedSlides: publicItems.length,
-                watchSlidesProgress: true,
+            const newsSwiper = new Swiper(".newsSwiper", {
+                loop: false, // ★ 修正: Swiperの標準ループは絶対に使わない（YouTubeエラーの元凶）
+                speed: 12000, 
                 autoplay: isSingle ? false : {
-                    delay: 3500, 
+                    delay: 0,
                     disableOnInteraction: false, 
                 },
                 slidesPerView: isSingle ? 1 : 1.15, 
                 centeredSlides: true, 
                 spaceBetween: 0, 
+                allowTouchMove: true,
                 pagination: {
                     el: ".swiper-pagination",
                     clickable: true,
                 },
                 breakpoints: {
                     768: {
-                        slidesPerView: isSingle ? 1 : 2.2, 
+                        slidesPerView: isSingle ? 1 : 1.5, 
                         centeredSlides: true,
                         spaceBetween: 0,
                     }
+                },
+                on: {
+                    // ★ 自作の「すり替え」処理でドラム式を再現
+                    slideChange: function () {
+                        // 現在アクティブなのが「自作のダミースライド（一番最後）」になったら
+                        if (this.activeIndex === displayItems.length) {
+                            // アニメーションなし（0ミリ秒）で本物の1枚目にワープ！
+                            this.slideTo(0, 0);
+                        }
+                    }
                 }
             });
+
+            // タップ（クリック）し続けている間だけ止まる仕掛け
+            if (!isSingle) {
+                const swiperArea = document.querySelector('.newsSwiper');
+                if (swiperArea) {
+                    swiperArea.addEventListener('touchstart', () => newsSwiper.autoplay.stop(), {passive: true});
+                    swiperArea.addEventListener('touchend', () => newsSwiper.autoplay.start(), {passive: true});
+                    swiperArea.addEventListener('mousedown', () => newsSwiper.autoplay.stop());
+                    swiperArea.addEventListener('mouseup', () => newsSwiper.autoplay.start());
+                    swiperArea.addEventListener('mouseleave', () => newsSwiper.autoplay.start());
+                }
+            }
         }
     } else {
         sliderWrapper.style.display = 'none'; 
+        if (sliderWrapper.parentElement) {
+            sliderWrapper.parentElement.style.display = 'none';
+        }
     }
 }
 // --- ▲ お知らせデータのフェッチ処理 ここまで ▲ ---
