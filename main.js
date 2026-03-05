@@ -1,19 +1,28 @@
 /* ==========================================
    Spreadsheet連携機能 (CMS) 設定
    ========================================== */
-const CMS_API_URL = 'https://script.google.com/macros/s/xxxxxxxxxxxxxxxxx/exec'; // ★ここを書き換え
+const CMS_API_URL = 'https://script.google.com/macros/s/xxxxxxxxxxxxxxxxx/exec'; // ★ここを書き換え（元のスプレッドシート用）
+
+// お知らせ(NEWS) JSONの取得元URL（★ここを news-info に修正しました）
+const NEWS_JSON_URL = 'https://kbperk.github.io/news-info/newsData.json';
 
 document.addEventListener('DOMContentLoaded', () => {
     const minLoadingTime = 1500;
     const startTime = Date.now();
 
-    let fetchPromise = Promise.resolve();
+    // 1. 既存のCMS（スプレッドシート）データのフェッチ
+    let fetchSitePromise = Promise.resolve();
     if(CMS_API_URL.includes('script.google.com')) {
-        fetchPromise = fetchSiteData();
+        fetchSitePromise = fetchSiteData();
     }
 
+    // 2. 今回追加したお知らせ(NEWS)データのフェッチ
+    let fetchNewsPromise = fetchNewsData();
+
+    // 両方のデータ取得とローディングの最低時間を待ってから画面を開く
     Promise.all([
-        fetchPromise,
+        fetchSitePromise,
+        fetchNewsPromise,
         new Promise(resolve => setTimeout(resolve, minLoadingTime))
     ]).then(() => {
         document.body.classList.add('loaded');
@@ -80,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initNavbar();
     
+    // ハンバーガーメニュー制御
     const hamburgerBtn = document.getElementById('hamburger_btn');
     const mobileMenu = document.getElementById('mobile_menu');
     const menuLinks = document.querySelectorAll('.menu-link');
@@ -92,12 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isMenuOpen) {
                 mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
                 mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
-                // 修正: ✖アイコンを w-8 h-8 のサイズにスリム化
                 hamburgerBtn.innerHTML = `<svg class="w-8 h-8 pointer-events-none text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>`;
             } else {
                 mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
                 mobileMenu.classList.add('opacity-0', 'pointer-events-none');
-                // 修正: 三本線アイコンも w-8 h-8 のサイズにスリム化
                 hamburgerBtn.innerHTML = `<svg class="w-8 h-8 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path></svg>`;
             }
         });
@@ -107,13 +115,108 @@ document.addEventListener('DOMContentLoaded', () => {
                 isMenuOpen = false;
                 mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
                 mobileMenu.classList.add('opacity-0', 'pointer-events-none');
-                // メニューを閉じた時も w-8 h-8 に戻す
                 hamburgerBtn.innerHTML = `<svg class="w-8 h-8 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path></svg>`;
             });
         });
     }
 });
 
+// --- ▼ お知らせ(NEWS)データのフェッチとUI構築 ▼ ---
+async function fetchNewsData() {
+    try {
+        const res = await fetch(NEWS_JSON_URL + '?v=' + new Date().getTime());
+        if(res.ok) {
+            const data = await res.json();
+            renderNewsSection(data);
+        }
+    } catch(e) {
+        console.error('News data loading failed.', e);
+    }
+}
+
+function getSafeEmbedUrl(url) {
+    if (!url) return "";
+    if (url.includes("youtube.com/embed/")) return url;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length === 11) {
+        return `https://www.youtube.com/embed/${match[2]}?rel=0`;
+    }
+    return url; 
+}
+
+function renderNewsSection(data) {
+    // 1. マーキーの処理
+    const marqueeWrapper = document.getElementById('marquee-wrapper');
+    const marqueeText = document.getElementById('text_news_marquee');
+    if (data.marquee && data.marquee.is_public && data.marquee.text) {
+        marqueeText.innerHTML = `<span>${data.marquee.text}</span>`;
+        marqueeWrapper.style.display = 'flex';
+    } else {
+        marqueeWrapper.style.display = 'none';
+    }
+
+    // 2. ロータリー式スライダーの処理
+    const sliderWrapper = document.getElementById('slider-wrapper');
+    const sliderTrack = document.getElementById('news-slider-track');
+    
+    const publicItems = (data.items || []).filter(item => item.is_public);
+    
+    if (publicItems.length > 0) {
+        sliderWrapper.style.display = 'block';
+        let html = '';
+        
+        publicItems.forEach(item => {
+            let mediaHtml = '';
+            if (item.youtube_url) {
+                const safeUrl = getSafeEmbedUrl(item.youtube_url);
+                mediaHtml = `<iframe src="${safeUrl}" class="absolute inset-0 w-full h-full object-cover" frameborder="0" allowfullscreen></iframe>`;
+            } else if (item.image) {
+                mediaHtml = `<img src="${item.image}" class="absolute inset-0 w-full h-full object-cover">`;
+            } else {
+                mediaHtml = `<div class="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">No Image</div>`;
+            }
+            
+            html += `
+                <div class="swiper-slide bg-white rounded-2xl shadow-lg overflow-hidden border-4 border-pop-yellow flex flex-col h-auto">
+                    <div class="relative w-full pb-[56.25%] bg-gray-100"> ${mediaHtml}
+                    </div>
+                    <div class="p-4 text-center bg-white flex-1 flex items-center justify-center">
+                        <h3 class="font-bold text-gray-800 text-sm md:text-base leading-snug">${item.title || "お知らせ"}</h3>
+                    </div>
+                </div>
+            `;
+        });
+        
+        sliderTrack.innerHTML = html;
+
+        if (typeof Swiper !== 'undefined') {
+            new Swiper(".newsSwiper", {
+                loop: publicItems.length > 1, 
+                slidesPerView: 1.2, 
+                centeredSlides: true, 
+                spaceBetween: 16, 
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                },
+                breakpoints: {
+                    768: {
+                        slidesPerView: 3, 
+                        centeredSlides: false,
+                        spaceBetween: 24,
+                    }
+                }
+            });
+        }
+    } else {
+        sliderWrapper.style.display = 'none';
+    }
+}
+// --- ▲ お知らせデータのフェッチ処理 ここまで ▲ ---
+
+
+// --- 既存のスクロールアニメーション等の初期化 ---
 function initScrollAnimations() {
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
@@ -192,7 +295,6 @@ function initNavbar() {
     const nav = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
-            // 修正: スクロール時により細く（py-1）なるように変更
             nav.classList.add('py-1', 'shadow-xl'); nav.classList.remove('py-2');
         } else {
             nav.classList.remove('py-1', 'shadow-xl'); nav.classList.add('py-2');
