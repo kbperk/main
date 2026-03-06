@@ -92,11 +92,6 @@
 </head>
 <body class="text-pop-text antialiased overflow-x-hidden fixed-bg-container">
 
-    <a href="https://kbperk.github.io/User/" class="fixed bottom-6 right-6 z-[9999] bg-pop-red text-white border-4 border-black rounded-full px-6 py-4 font-bold text-xl md:text-2xl shadow-[6px_6px_0px_#1C1C1E] animate-pulse-fast hover:scale-110 transition-transform flex items-center gap-2 group isolate">
-        <span class="group-hover:-rotate-12 transition-transform text-2xl">🎫</span>
-        <span>ご予約はこちら</span>
-    </a>
-
     <div id="loader">
         <img src="kb君万歳.png" alt="Loading" id="loader_char" class="loader-character w-[250px] md:w-[400px] h-auto object-contain drop-shadow-2xl">
         <div class="loader-shadow w-[150px] md:w-[250px]"></div>
@@ -112,9 +107,14 @@
     </div>
 
     <nav class="fixed top-0 w-full z-50 glass-panel border-b-4 border-pop-green transition-all duration-300 py-2" id="navbar">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center relative">
             <a href="#" id="nav_logo" class="text-2xl font-english font-bold text-pop-green tracking-wider hover:-rotate-12 transition transform inline-block">KB Park</a>
             
+            <a href="https://kbperk.github.io/User/" class="absolute left-1/2 transform -translate-x-1/2 bg-pop-green text-white border-2 md:border-4 border-white rounded-full px-4 md:px-8 py-1.5 md:py-2 font-bold text-sm md:text-lg shadow-md animate-pulse-fast hover:scale-105 transition-transform flex items-center gap-1 md:gap-2 group whitespace-nowrap">
+                <span class="group-hover:-rotate-12 transition-transform text-base md:text-xl">🎫</span>
+                <span>予約へGO！</span>
+            </a>
+
             <button id="hamburger_btn" class="text-pop-green text-3xl focus:outline-none hover:scale-110 transition-transform relative z-50 cursor-pointer p-1 -mr-1">
                 <svg class="w-8 h-8 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path>
