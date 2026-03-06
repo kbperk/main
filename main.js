@@ -173,13 +173,22 @@ function renderNewsSection(data) {
         }
 
         let html = '';
+        const isSingle = publicItems.length === 1;
         
-        publicItems.forEach(item => {
+        // ▼ 修正：バグ対策！要素数が少ないとSwiperのクローンが途切れるため、安全に多めに水増しコピーする ▼
+        let displayItems = [...publicItems];
+        if (!isSingle && publicItems.length > 0 && publicItems.length < 10) {
+            while (displayItems.length < 10) {
+                displayItems = displayItems.concat(publicItems);
+            }
+        }
+        
+        displayItems.forEach(item => {
             let mediaHtml = '';
             if (item.youtube_url) {
                 const vid = getYouTubeId(item.youtube_url);
                 if (vid) {
-                    // サムネイル画像だけを置いてエラーを回避する
+                    // 最初は絶対に動画を置かず、「サムネイル画像」だけを置いてエラーを回避する
                     mediaHtml = `
                         <div class="yt-dynamic-container absolute inset-0 w-full h-full bg-black" data-vid="${vid}">
                             <img src="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${vid}/hqdefault.jpg';" class="absolute inset-0 w-full h-full object-cover opacity-60">
@@ -203,8 +212,6 @@ function renderNewsSection(data) {
         });
         
         sliderTrack.innerHTML = html;
-
-        const isSingle = publicItems.length === 1;
 
         if (typeof Swiper !== 'undefined') {
             
@@ -261,18 +268,16 @@ function renderNewsSection(data) {
                 const ytContainer = activeSlide.querySelector('.yt-dynamic-container');
                 if (ytContainer) {
                     const vid = ytContainer.getAttribute('data-vid');
-                    // 矢印ボタンでスワイプできるようポインターイベントをオフにして動画化
                     ytContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${vid}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${vid}&controls=0&rel=0" class="absolute inset-0 w-full h-full object-cover pointer-events-none" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 }
             }
 
-            // ▼ 修正: 等速スクロールや自動再生をOFFにし、手動1枚切り替え仕様に変更 ▼
+            // ▼ 修正：バグの元凶だった loopedSlides の指定を削除し、手動スライド設定に変更 ▼
             new Swiper(".newsSwiper", {
-                loop: !isSingle, 
-                loopedSlides: publicItems.length,
+                loop: !isSingle, // 完璧なドラム式
                 watchSlidesProgress: true,
-                speed: 500, // 通常の切り替えスピード
-                autoplay: false, // 自動スクロールは行わない
+                speed: 500, // 手動での自然なスライド速度
+                autoplay: false, // 自動スライドなし（手動操作）
                 slidesPerView: isSingle ? 1 : 1.15, 
                 centeredSlides: true, 
                 spaceBetween: 0, 
@@ -295,7 +300,7 @@ function renderNewsSection(data) {
                     init: function () {
                         injectYouTube(this);
                     },
-                    // スライドが切り替わり終わった時に動画を再生する
+                    // 手動でスライドし、ピタッと止まった瞬間に動画を生成・再生する
                     slideChangeTransitionEnd: function () {
                         injectYouTube(this);
                     }
