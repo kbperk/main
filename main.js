@@ -119,18 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-
-    // ▼ 追加：スムーズなスクロール（等速直線運動）のためのCSSを自動追加 ▼
-    if (!document.getElementById('swiper-linear-style')) {
-        const style = document.createElement('style');
-        style.id = 'swiper-linear-style';
-        style.innerHTML = `
-            .newsSwiper .swiper-wrapper {
-                transition-timing-function: linear !important;
-            }
-        `;
-        document.head.appendChild(style);
-    }
 });
 
 // --- ▼ お知らせ(NEWS)データのフェッチとUI構築 ▼ ---
@@ -146,7 +134,6 @@ async function fetchNewsData() {
     }
 }
 
-// YouTubeのURLから動画IDだけを確実に抜き出す関数
 function getYouTubeId(url) {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
@@ -167,7 +154,6 @@ function renderNewsSection(data) {
     const sliderWrapper = document.getElementById('slider-wrapper');
     const sliderTrack = document.getElementById('news-slider-track');
     
-    // 画像またはYouTube動画が設定されていて、かつ「公開」になっているものだけを抽出
     const publicItems = (data.items || []).filter(item => {
         return item.is_public && (item.image || item.youtube_url);
     });
@@ -175,7 +161,6 @@ function renderNewsSection(data) {
     if (publicItems.length > 0) {
         sliderWrapper.style.display = 'block';
         
-        // 画面いっぱいに広げる指定
         if (sliderWrapper.parentElement) {
             const parent = sliderWrapper.parentElement;
             parent.className = ''; 
@@ -194,7 +179,7 @@ function renderNewsSection(data) {
             if (item.youtube_url) {
                 const vid = getYouTubeId(item.youtube_url);
                 if (vid) {
-                    // 最初は絶対に動画を置かず、「サムネイル画像」だけを置いてエラーを回避する
+                    // サムネイル画像だけを置いてエラーを回避する
                     mediaHtml = `
                         <div class="yt-dynamic-container absolute inset-0 w-full h-full bg-black" data-vid="${vid}">
                             <img src="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${vid}/hqdefault.jpg';" class="absolute inset-0 w-full h-full object-cover opacity-60">
@@ -205,7 +190,6 @@ function renderNewsSection(data) {
                 mediaHtml = `<img src="${item.image}" class="absolute inset-0 w-full h-full object-contain">`;
             }
             
-            // 高さ h-[40vh] md:h-[55vh] で1.5倍化
             html += `
                 <div class="swiper-slide bg-black flex flex-col h-auto border-y-[6px] md:border-y-8 border-pop-green box-border overflow-hidden">
                     <div class="py-2 md:py-3 text-center bg-white relative z-10 shadow-sm">
@@ -224,7 +208,6 @@ function renderNewsSection(data) {
 
         if (typeof Swiper !== 'undefined') {
             
-            // 矢印ボタンの生成
             const swiperContainer = document.querySelector('.newsSwiper');
             if (swiperContainer && !document.querySelector('.news-swiper-button-next')) {
                 const nextBtn = document.createElement('div');
@@ -266,38 +249,30 @@ function renderNewsSection(data) {
                 }
             }
 
-            // 真ん中に来た時だけ動画を生成する専用関数
             function injectYouTube(swiper) {
-                // 1. 全ての動画枠を一旦リセット（画像に戻し、動画を破壊してエラーを防ぐ）
                 document.querySelectorAll('.yt-dynamic-container').forEach(container => {
                     const vid = container.getAttribute('data-vid');
                     container.innerHTML = `<img src="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${vid}/hqdefault.jpg';" class="absolute inset-0 w-full h-full object-cover opacity-60">`;
                 });
 
-                // 2. 現在「真ん中（アクティブ）」にあるスライドを取得
                 const activeSlide = swiper.slides[swiper.activeIndex];
                 if (!activeSlide) return;
 
-                // 3. 真ん中のスライドがYouTubeなら、動画(iframe)を注入して自動再生させる
                 const ytContainer = activeSlide.querySelector('.yt-dynamic-container');
                 if (ytContainer) {
                     const vid = ytContainer.getAttribute('data-vid');
-                    // pointer-events-none を付けることで、動画の上でもスワイプやタップ停止が反応するようにします
+                    // 矢印ボタンでスワイプできるようポインターイベントをオフにして動画化
                     ytContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${vid}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${vid}&controls=0&rel=0" class="absolute inset-0 w-full h-full object-cover pointer-events-none" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 }
             }
 
-            // スライダーの初期化
-            const newsSwiper = new Swiper(".newsSwiper", {
-                loop: !isSingle, // 夢のドラム式を開放！
+            // ▼ 修正: 等速スクロールや自動再生をOFFにし、手動1枚切り替え仕様に変更 ▼
+            new Swiper(".newsSwiper", {
+                loop: !isSingle, 
                 loopedSlides: publicItems.length,
                 watchSlidesProgress: true,
-                // ▼ 修正：等速直線運動でゆっくり止まらずに回り続ける設定 ▼
-                speed: 12000, 
-                autoplay: isSingle ? false : {
-                    delay: 0, 
-                    disableOnInteraction: false, 
-                },
+                speed: 500, // 通常の切り替えスピード
+                autoplay: false, // 自動スクロールは行わない
                 slidesPerView: isSingle ? 1 : 1.15, 
                 centeredSlides: true, 
                 spaceBetween: 0, 
@@ -317,30 +292,15 @@ function renderNewsSection(data) {
                     }
                 },
                 on: {
-                    // スライダーが作られた時と、スライドが切り替わった時に動的生成を発動
                     init: function () {
                         injectYouTube(this);
                     },
-                    // ▼ 修正：等速スクロール中は slideChange イベントで発火させる ▼
-                    slideChange: function () {
+                    // スライドが切り替わり終わった時に動画を再生する
+                    slideChangeTransitionEnd: function () {
                         injectYouTube(this);
                     }
                 }
             });
-
-            // 画面をタップ（押さえている）間は、スライドを停止し動画だけを再生し続ける処理
-            if (!isSingle) {
-                const swiperArea = document.querySelector('.newsSwiper');
-                if (swiperArea) {
-                    // スマホ（指）用
-                    swiperArea.addEventListener('touchstart', () => newsSwiper.autoplay.stop(), {passive: true});
-                    swiperArea.addEventListener('touchend', () => newsSwiper.autoplay.start(), {passive: true});
-                    // PC（マウス）用
-                    swiperArea.addEventListener('mousedown', () => newsSwiper.autoplay.stop());
-                    swiperArea.addEventListener('mouseup', () => newsSwiper.autoplay.start());
-                    swiperArea.addEventListener('mouseleave', () => newsSwiper.autoplay.start());
-                }
-            }
         }
     } else {
         sliderWrapper.style.display = 'none'; 
