@@ -115,11 +115,14 @@
                 <span>予約へGO！</span>
             </a>
 
-            <button id="hamburger_btn" class="text-pop-green text-3xl focus:outline-none hover:scale-110 transition-transform relative z-50 cursor-pointer p-1 -mr-1">
-                <svg class="w-8 h-8 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
+            <div class="flex items-center gap-1 md:gap-2 relative z-50 cursor-pointer" id="menu_trigger_area">
+                <span class="text-pop-green font-bold text-sm md:text-base pointer-events-none">メニュー</span>
+                <button id="hamburger_btn" class="text-pop-green text-3xl focus:outline-none hover:scale-110 transition-transform p-1 -mr-1">
+                    <svg class="w-8 h-8 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -334,7 +337,7 @@
                             </div>
                             <div class="bg-white/80 backdrop-blur-md p-4 md:p-6 rounded-xl border-4 border-white/50 shadow-sm md:flex-none flex justify-between items-center md:block">
                                 <div class="text-pop-red font-bold text-sm md:text-xl md:mb-2">大人 + 子供2名</div>
-                                <div class="text-2xl md:text-4xl font-bold text-gray-800">¥3,000</div>
+                                <div class="text-2xl md:text-4xl font-bold text-gray-800">¥3,500</div>
                             </div>
                         </div>
                     </div>
@@ -356,12 +359,34 @@
                     <div>
                         <h4 class="font-bold text-gray-800 mb-1 md:mb-2 text-base md:text-xl" id="text_reg_title">初回登録・再発行</h4>
                         <p class="text-gray-700 font-bold text-sm md:text-base leading-relaxed" id="text_reg_desc">
-                            初回のみ登録料 <span class="text-pop-pink text-base md:text-xl">¥800</span>（専用ソックス付）が必要です。<br>
+                            初回のみ登録料 <span class="text-pop-pink text-base md:text-xl">¥800</span>が必要です。<br>
                             カード再発行：<span class="text-pop-pink text-base md:text-xl">¥300</span><br>
-                            <span class="text-xs md:text-sm text-gray-500">※2回目以降はカードとソックスをご持参ください。</span>
+                            <span class="text-xs md:text-sm text-gray-500">※2回目以降はカードをご持参ください。</span>
                         </p>
                     </div>
                 </div>
+
+                <div class="js-scroll fade-up mt-6 glass-panel-light bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-lg border-l-[6px] md:border-l-8 border-pop-yellow">
+                    <h4 class="font-bold text-gray-800 mb-4 text-xl md:text-2xl border-b-2 border-pop-yellow pb-2 inline-block">🎉 貸し切り料金（1時間）</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-gray-700 font-bold text-sm md:text-base">
+                        <div class="flex justify-between border-b border-white pb-1"><span>平日</span><span>¥6,000</span></div>
+                        <div class="flex justify-between border-b border-white pb-1"><span>土日・繁忙期の平日</span><span>¥8,000</span></div>
+                        <div class="flex justify-between border-b border-white pb-1"><span>日曜・祝日</span><span>¥10,000</span></div>
+                        <div class="flex justify-between border-b border-white pb-1"><span>お盆・正月期間</span><span>¥15,000</span></div>
+                        <div class="flex justify-between col-span-1 md:col-span-2 pt-2 text-pop-pink"><span>30分延長</span><span>貸し切り料金の半額</span></div>
+                    </div>
+                </div>
+
+                <div class="js-scroll fade-up mt-6 glass-panel-light bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-lg border-l-[6px] md:border-l-8 border-pop-cyan">
+                    <h4 class="font-bold text-gray-800 mb-1 text-xl md:text-2xl flex items-center gap-2">🤸 ちょこっとパーソナル</h4>
+                    <p class="text-sm text-gray-600 mb-4 font-bold">（15分間のぷち技指導）</p>
+                    <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 text-gray-700 font-bold text-base md:text-lg mb-3">
+                        <div class="flex items-center gap-3"><span class="bg-pop-cyan text-white px-4 py-1 rounded-full text-sm">マンツーマン</span> <span>¥500</span></div>
+                        <div class="flex items-center gap-3"><span class="bg-pop-cyan text-white px-4 py-1 rounded-full text-sm">グループ</span> <span>¥1,000</span></div>
+                    </div>
+                    <p class="text-xs md:text-sm text-gray-500 font-bold">※混雑時など、対応できない場合もございますのでご了承ください。</p>
+                </div>
+
             </div>
         </section>
 
@@ -434,7 +459,7 @@
                     </summary>
                      <div class="p-4 md:p-6 text-gray-600 font-bold text-sm md:text-base leading-relaxed border-t border-white/50 bg-white/70">
                         <span class="text-pop-green text-lg md:text-xl mr-1">A.</span>
-                        <span id="text_faq_5_a">小学生未満のお子様1人だけのご利用はお断りしております。親御様もご一緒にチャレンジをお待ちしております。</span>
+                        <span id="text_faq_5_a">子供1人でokですが、大人の方が極力付き添いをしていただくようお願いします。（付き添い入場のみ200円）</span>
                     </div>
                 </details>
             </div>
@@ -493,5 +518,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuTrigger = document.getElementById('menu_trigger_area');
+            const hamburgerBtn = document.getElementById('hamburger_btn');
+            // メニューテキスト部分をクリックしてもハンバーガーボタンと同じ動作をするように追加
+            if(menuTrigger && hamburgerBtn) {
+                menuTrigger.addEventListener('click', (e) => {
+                    if(e.target !== hamburgerBtn) {
+                        hamburgerBtn.click();
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
