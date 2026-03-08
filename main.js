@@ -6,7 +6,6 @@ const CMS_API_URL = 'https://script.google.com/macros/s/xxxxxxxxxxxxxxxxx/exec';
 // お知らせ(NEWS) JSONの取得元URL
 const NEWS_JSON_URL = 'https://kbperk.github.io/news-info/newsData.json';
 
-// ▼ 追加：モーダル用Swiperの変数を定義 ▼
 let modalSwiper = null;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -87,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             initScrollAnimations();
             initDancingText(); 
+            initPopcornAnimation(); // ▼ 追加：ポップコーン起動 ▼
         }, 500);
     });
 
@@ -175,7 +175,7 @@ function renderNewsSection(data) {
         }
 
         let html = '';
-        let modalHtml = ''; // ▼ 追加：モーダル用HTMLを格納する変数 ▼
+        let modalHtml = ''; 
         
         const isSingle = publicItems.length === 1;
         
@@ -187,9 +187,6 @@ function renderNewsSection(data) {
         }
         
         displayItems.forEach((item, index) => {
-            // ==========================================
-            // 1. メイン画面用スライダーのHTML生成
-            // ==========================================
             let mediaHtml = '';
             if (item.youtube_url) {
                 const vid = getYouTubeId(item.youtube_url);
@@ -204,7 +201,6 @@ function renderNewsSection(data) {
                 mediaHtml = `<img src="${item.image}" class="absolute inset-0 w-full h-full object-contain pointer-events-none">`;
             }
             
-            // ▼ 修正：クリック時のインデックスを判別するため data-original-index を付与 ▼
             const originalIndex = index % publicItems.length;
             html += `
                 <div class="swiper-slide bg-black flex flex-col h-auto border-y-[6px] md:border-y-8 border-pop-green box-border overflow-hidden cursor-pointer hover:opacity-90 transition-opacity" data-original-index="${originalIndex}">
@@ -217,9 +213,6 @@ function renderNewsSection(data) {
                 </div>
             `;
 
-            // ==========================================
-            // 2. モーダル画面用スライダーのHTML生成 (ズーム対応)
-            // ==========================================
             let modalMediaHtml = '';
             if (item.youtube_url) {
                 const vid = getYouTubeId(item.youtube_url);
@@ -238,7 +231,6 @@ function renderNewsSection(data) {
                     `;
                 }
             } else if (item.image) {
-                // ▼ 画像には swiper-zoom-container を付与してピンチアウトを可能に ▼
                 modalMediaHtml = `
                     <div class="swiper-zoom-container">
                         <img src="${item.image}" class="w-full h-full object-contain">
@@ -262,7 +254,6 @@ function renderNewsSection(data) {
 
         if (typeof Swiper !== 'undefined') {
             
-            // 矢印ボタンの共通デザインを追加 (modal用も含む)
             const swiperContainer = document.querySelector('.newsSwiper');
             if (swiperContainer && !document.querySelector('.news-swiper-button-next')) {
                 const nextBtn = document.createElement('div');
@@ -304,7 +295,6 @@ function renderNewsSection(data) {
                 }
             }
 
-            // メイン画面の動画注入ロジック
             function injectYouTube(swiper) {
                 document.querySelectorAll('.yt-dynamic-container').forEach(container => {
                     const vid = container.getAttribute('data-vid');
@@ -321,9 +311,6 @@ function renderNewsSection(data) {
                 }
             }
 
-            // ==========================================
-            // 1. メイン画面のSwiper初期化
-            // ==========================================
             const newsSwiper = new Swiper(".newsSwiper", {
                 loop: !isSingle, 
                 watchSlidesProgress: true,
@@ -357,9 +344,6 @@ function renderNewsSection(data) {
                 }
             });
 
-            // ==========================================
-            // 2. モーダル画面の動画注入ロジックとSwiper初期化
-            // ==========================================
             function injectModalYouTube(swiper) {
                 document.querySelectorAll('.yt-modal-dynamic').forEach(container => {
                     const vid = container.getAttribute('data-vid');
@@ -379,7 +363,6 @@ function renderNewsSection(data) {
                 const ytContainer = activeSlide.querySelector('.yt-modal-dynamic');
                 if (ytContainer) {
                     const vid = ytContainer.getAttribute('data-vid');
-                    // モーダルでは音量変更などができるように controls=1 と pointer-events を有効化
                     ytContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${vid}?autoplay=1&mute=0&playsinline=1&controls=1&rel=0" class="absolute inset-0 w-full h-full border-0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 }
             }
@@ -388,7 +371,6 @@ function renderNewsSection(data) {
                 loop: !isSingle,
                 speed: 400,
                 spaceBetween: 20,
-                // ▼ 追加：画像のピンチアウト（拡大）機能を有効化 ▼
                 zoom: {
                     maxRatio: 3,
                 },
@@ -410,9 +392,6 @@ function renderNewsSection(data) {
                 }
             });
 
-            // ==========================================
-            // 3. メイン画面タップでモーダルを開くイベント
-            // ==========================================
             sliderTrack.addEventListener('click', function(e) {
                 const slide = e.target.closest('.swiper-slide');
                 if (slide) {
@@ -425,23 +404,19 @@ function renderNewsSection(data) {
                         modal.classList.add('opacity-100', 'pointer-events-auto');
                         
                         if (modalSwiper) {
-                            modalSwiper.slideToLoop(indexToSlide, 0); // 押した画像から即座にスタート
+                            modalSwiper.slideToLoop(indexToSlide, 0); 
                             injectModalYouTube(modalSwiper);
                         }
                     }
                 }
             });
 
-            // ==========================================
-            // 4. モーダルを閉じるイベント
-            // ==========================================
             const closeModalBtn = document.getElementById('close-news-modal');
             const newsModal = document.getElementById('news-modal');
             if (closeModalBtn && newsModal) {
                 closeModalBtn.addEventListener('click', () => {
                     newsModal.classList.add('opacity-0', 'pointer-events-none');
                     newsModal.classList.remove('opacity-100', 'pointer-events-auto');
-                    // 閉じるときは再生中の動画を停止させるため初期状態（画像）に戻す
                     document.querySelectorAll('.yt-modal-dynamic').forEach(container => {
                         const vid = container.getAttribute('data-vid');
                         container.innerHTML = `
@@ -662,4 +637,61 @@ function adjustFontSizeToFit(element) {
         element.style.fontSize = fontSize + 'px';
         safety++;
     }
+}
+
+// --- ▼ 新規追加：ポップコーンアニメーション ▼ ---
+function initPopcornAnimation() {
+    if (typeof gsap === 'undefined') return;
+
+    function spawnPopcorn() {
+        const images = ['ポップコーン表示1.png', 'ポップコーン表示2.png', 'ポップコーン表示3.png'];
+        const imgSrc = images[Math.floor(Math.random() * images.length)];
+        
+        const popcorn = document.createElement('img');
+        popcorn.src = imgSrc;
+        // 画面の最後方（背景とメインコンテンツの間）で、少し透過させて邪魔にならないように表示
+        popcorn.className = 'fixed pointer-events-none w-12 h-12 md:w-20 md:h-20 object-contain opacity-70'; 
+        popcorn.style.zIndex = '1';
+        
+        // ランダムな初期位置（画面下部の外側からスタート）
+        const startX = Math.random() * window.innerWidth;
+        popcorn.style.left = `${startX}px`;
+        popcorn.style.bottom = '-100px'; 
+        
+        document.body.appendChild(popcorn);
+        
+        const duration = 2.5 + Math.random() * 2; 
+        const moveX = (Math.random() - 0.5) * 400; 
+        const jumpHeight = window.innerHeight * (0.6 + Math.random() * 0.4); 
+        
+        // 回転しながら横へ移動
+        gsap.to(popcorn, {
+            x: moveX,
+            rotation: (Math.random() - 0.5) * 720,
+            duration: duration,
+            ease: "none"
+        });
+        
+        // 縦方向のジャンプ（パラボラ軌道）
+        gsap.to(popcorn, {
+            y: -jumpHeight, // 上へ
+            duration: duration / 2,
+            ease: "power2.out",
+            onComplete: () => {
+                gsap.to(popcorn, {
+                    y: 100, // 下へ落下して画面外へ
+                    duration: duration / 2,
+                    ease: "power2.in",
+                    onComplete: () => popcorn.remove()
+                });
+            }
+        });
+
+        // 3秒〜10秒のランダムな間隔で次のポップコーンを発生させる
+        const nextTime = 3000 + Math.random() * 7000;
+        setTimeout(spawnPopcorn, nextTime);
+    }
+
+    // 初回起動（3〜10秒後）
+    setTimeout(spawnPopcorn, 3000 + Math.random() * 7000);
 }
