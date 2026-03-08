@@ -176,6 +176,9 @@
             </div>
 
             <div id="slider-wrapper" class="js-scroll fade-up" style="display: none;">
+                <div class="text-center mb-2">
+                    <span class="text-xs md:text-sm font-bold text-gray-600 bg-white/60 px-3 py-1 rounded-full">👆 タップして拡大表示</span>
+                </div>
                 <div class="swiper newsSwiper pb-10">
                     <div class="swiper-wrapper" id="news-slider-track">
                         </div>
@@ -184,6 +187,7 @@
             </div>
 
         </section>
+
         <section class="relative py-20 my-24 md:my-40 glass-panel overflow-hidden text-center">
             <div class="absolute top-10 left-10 text-6xl opacity-30 animate-bounce delay-100 gs-float">🌿</div>
             <div class="absolute top-20 right-10 text-6xl opacity-30 animate-bounce delay-700 gs-float">✨</div>
@@ -515,6 +519,24 @@
         
     </main>
 
+    <div id="news-modal" class="fixed inset-0 z-[10000] bg-black/95 opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-center items-center backdrop-blur-md">
+        <button id="close-news-modal" class="absolute top-4 right-4 md:top-8 md:right-8 text-white text-5xl z-50 hover:scale-110 transition-transform cursor-pointer">&times;</button>
+        
+        <div class="w-full max-w-6xl h-[80vh] md:h-[90vh] relative">
+            <div class="swiper modalSwiper h-full">
+                <div class="swiper-wrapper" id="modal-slider-track">
+                    </div>
+                <div class="swiper-button-next modal-next"></div>
+                <div class="swiper-button-prev modal-prev"></div>
+                <div class="swiper-pagination modal-pagination"></div>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-4 text-white/70 text-sm md:text-base font-bold flex items-center gap-2 pointer-events-none">
+            <span>🔍 画像はピンチアウトで拡大できます</span>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="main.js"></script>
@@ -522,7 +544,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             const menuTrigger = document.getElementById('menu_trigger_area');
             const hamburgerBtn = document.getElementById('hamburger_btn');
-            // メニューテキスト部分をクリックしてもハンバーガーボタンと同じ動作をするように追加
             if(menuTrigger && hamburgerBtn) {
                 menuTrigger.addEventListener('click', (e) => {
                     if(e.target !== hamburgerBtn) {

@@ -6,6 +6,9 @@ const CMS_API_URL = 'https://script.google.com/macros/s/xxxxxxxxxxxxxxxxx/exec';
 // お知らせ(NEWS) JSONの取得元URL
 const NEWS_JSON_URL = 'https://kbperk.github.io/news-info/newsData.json';
 
+// ▼ 追加：モーダル用Swiperの変数を定義 ▼
+let modalSwiper = null;
+
 document.addEventListener('DOMContentLoaded', () => {
     const minLoadingTime = 1500;
     const startTime = Date.now();
@@ -89,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initNavbar();
     
-    // ハンバーガーメニュー制御
     const hamburgerBtn = document.getElementById('hamburger_btn');
     const mobileMenu = document.getElementById('mobile_menu');
     const menuLinks = document.querySelectorAll('.menu-link');
@@ -173,9 +175,10 @@ function renderNewsSection(data) {
         }
 
         let html = '';
+        let modalHtml = ''; // ▼ 追加：モーダル用HTMLを格納する変数 ▼
+        
         const isSingle = publicItems.length === 1;
         
-        // ▼ 修正：バグ対策！要素数が少ないとSwiperのクローンが途切れるため、安全に多めに水増しコピーする ▼
         let displayItems = [...publicItems];
         if (!isSingle && publicItems.length > 0 && publicItems.length < 10) {
             while (displayItems.length < 10) {
@@ -183,25 +186,29 @@ function renderNewsSection(data) {
             }
         }
         
-        displayItems.forEach(item => {
+        displayItems.forEach((item, index) => {
+            // ==========================================
+            // 1. メイン画面用スライダーのHTML生成
+            // ==========================================
             let mediaHtml = '';
             if (item.youtube_url) {
                 const vid = getYouTubeId(item.youtube_url);
                 if (vid) {
-                    // 最初は絶対に動画を置かず、「サムネイル画像」だけを置いてエラーを回避する
                     mediaHtml = `
-                        <div class="yt-dynamic-container absolute inset-0 w-full h-full bg-black" data-vid="${vid}">
+                        <div class="yt-dynamic-container absolute inset-0 w-full h-full bg-black pointer-events-none" data-vid="${vid}">
                             <img src="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${vid}/hqdefault.jpg';" class="absolute inset-0 w-full h-full object-cover opacity-60">
                         </div>
                     `;
                 }
             } else if (item.image) {
-                mediaHtml = `<img src="${item.image}" class="absolute inset-0 w-full h-full object-contain">`;
+                mediaHtml = `<img src="${item.image}" class="absolute inset-0 w-full h-full object-contain pointer-events-none">`;
             }
             
+            // ▼ 修正：クリック時のインデックスを判別するため data-original-index を付与 ▼
+            const originalIndex = index % publicItems.length;
             html += `
-                <div class="swiper-slide bg-black flex flex-col h-auto border-y-[6px] md:border-y-8 border-pop-green box-border overflow-hidden">
-                    <div class="py-2 md:py-3 text-center bg-white relative z-10 shadow-sm">
+                <div class="swiper-slide bg-black flex flex-col h-auto border-y-[6px] md:border-y-8 border-pop-green box-border overflow-hidden cursor-pointer hover:opacity-90 transition-opacity" data-original-index="${originalIndex}">
+                    <div class="py-2 md:py-3 text-center bg-white relative z-10 shadow-sm pointer-events-none">
                         <h3 class="font-bold text-gray-800 text-sm md:text-lg leading-snug tracking-wider">${item.title || "お知らせ"}</h3>
                     </div>
                     <div class="relative w-full h-[40vh] md:h-[55vh] bg-black flex items-center justify-center"> 
@@ -209,12 +216,53 @@ function renderNewsSection(data) {
                     </div>
                 </div>
             `;
+
+            // ==========================================
+            // 2. モーダル画面用スライダーのHTML生成 (ズーム対応)
+            // ==========================================
+            let modalMediaHtml = '';
+            if (item.youtube_url) {
+                const vid = getYouTubeId(item.youtube_url);
+                if (vid) {
+                    modalMediaHtml = `
+                        <div class="w-full px-2 md:px-8 flex items-center justify-center h-full">
+                            <div class="relative w-full max-w-4xl aspect-video bg-black yt-modal-dynamic shadow-2xl rounded-xl overflow-hidden" data-vid="${vid}">
+                                <img src="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${vid}/hqdefault.jpg';" class="absolute inset-0 w-full h-full object-cover opacity-60 cursor-pointer">
+                                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                    <div class="w-16 h-12 bg-[#FF0000] rounded-2xl flex items-center justify-center shadow-lg">
+                                        <div class="w-0 h-0 border-t-[10px] border-t-transparent border-l-[16px] border-l-white border-b-[10px] border-b-transparent ml-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (item.image) {
+                // ▼ 画像には swiper-zoom-container を付与してピンチアウトを可能に ▼
+                modalMediaHtml = `
+                    <div class="swiper-zoom-container">
+                        <img src="${item.image}" class="w-full h-full object-contain">
+                    </div>
+                `;
+            }
+            
+            modalHtml += `
+                <div class="swiper-slide bg-transparent flex flex-col items-center justify-center h-full">
+                    ${modalMediaHtml}
+                    <div class="absolute bottom-8 left-0 w-full text-center z-10 pointer-events-none">
+                        <span class="bg-black/80 text-white px-6 py-2 rounded-full font-bold shadow-md text-sm md:text-base border border-white/20">${item.title || "お知らせ"}</span>
+                    </div>
+                </div>
+            `;
         });
         
         sliderTrack.innerHTML = html;
+        const modalTrack = document.getElementById('modal-slider-track');
+        if (modalTrack) modalTrack.innerHTML = modalHtml;
 
         if (typeof Swiper !== 'undefined') {
             
+            // 矢印ボタンの共通デザインを追加 (modal用も含む)
             const swiperContainer = document.querySelector('.newsSwiper');
             if (swiperContainer && !document.querySelector('.news-swiper-button-next')) {
                 const nextBtn = document.createElement('div');
@@ -228,7 +276,7 @@ function renderNewsSection(data) {
                     const style = document.createElement('style');
                     style.id = 'news-arrow-style';
                     style.innerHTML = `
-                        .news-swiper-button-next, .news-swiper-button-prev {
+                        .news-swiper-button-next, .news-swiper-button-prev, .modal-next, .modal-prev {
                             color: #32D74B !important; 
                             background: rgba(255, 255, 255, 0.9);
                             width: 44px !important;
@@ -237,7 +285,7 @@ function renderNewsSection(data) {
                             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
                             border: 3px solid #fff;
                         }
-                        .news-swiper-button-next::after, .news-swiper-button-prev::after {
+                        .news-swiper-button-next::after, .news-swiper-button-prev::after, .modal-next::after, .modal-prev::after {
                             font-size: 20px !important;
                             font-weight: 900;
                         }
@@ -245,17 +293,18 @@ function renderNewsSection(data) {
                             opacity: 0.3 !important;
                             pointer-events: none;
                         }
-                        .news-swiper-button-next { right: 10px !important; }
-                        .news-swiper-button-prev { left: 10px !important; }
+                        .news-swiper-button-next, .modal-next { right: 10px !important; }
+                        .news-swiper-button-prev, .modal-prev { left: 10px !important; }
                         @media (min-width: 768px) {
-                            .news-swiper-button-next { right: 30px !important; }
-                            .news-swiper-button-prev { left: 30px !important; }
+                            .news-swiper-button-next, .modal-next { right: 30px !important; }
+                            .news-swiper-button-prev, .modal-prev { left: 30px !important; }
                         }
                     `;
                     document.head.appendChild(style);
                 }
             }
 
+            // メイン画面の動画注入ロジック
             function injectYouTube(swiper) {
                 document.querySelectorAll('.yt-dynamic-container').forEach(container => {
                     const vid = container.getAttribute('data-vid');
@@ -272,12 +321,14 @@ function renderNewsSection(data) {
                 }
             }
 
-            // ▼ 修正：バグの元凶だった loopedSlides の指定を削除し、手動スライド設定に変更 ▼
-            new Swiper(".newsSwiper", {
-                loop: !isSingle, // 完璧なドラム式
+            // ==========================================
+            // 1. メイン画面のSwiper初期化
+            // ==========================================
+            const newsSwiper = new Swiper(".newsSwiper", {
+                loop: !isSingle, 
                 watchSlidesProgress: true,
-                speed: 500, // 手動での自然なスライド速度
-                autoplay: false, // 自動スライドなし（手動操作）
+                speed: 500, 
+                autoplay: false, 
                 slidesPerView: isSingle ? 1 : 1.15, 
                 centeredSlides: true, 
                 spaceBetween: 0, 
@@ -300,12 +351,111 @@ function renderNewsSection(data) {
                     init: function () {
                         injectYouTube(this);
                     },
-                    // 手動でスライドし、ピタッと止まった瞬間に動画を生成・再生する
                     slideChangeTransitionEnd: function () {
                         injectYouTube(this);
                     }
                 }
             });
+
+            // ==========================================
+            // 2. モーダル画面の動画注入ロジックとSwiper初期化
+            // ==========================================
+            function injectModalYouTube(swiper) {
+                document.querySelectorAll('.yt-modal-dynamic').forEach(container => {
+                    const vid = container.getAttribute('data-vid');
+                    container.innerHTML = `
+                        <img src="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${vid}/hqdefault.jpg';" class="absolute inset-0 w-full h-full object-cover opacity-60 cursor-pointer">
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div class="w-16 h-12 bg-[#FF0000] rounded-2xl flex items-center justify-center shadow-lg">
+                                <div class="w-0 h-0 border-t-[10px] border-t-transparent border-l-[16px] border-l-white border-b-[10px] border-b-transparent ml-1"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                const activeSlide = swiper.slides[swiper.activeIndex];
+                if (!activeSlide) return;
+
+                const ytContainer = activeSlide.querySelector('.yt-modal-dynamic');
+                if (ytContainer) {
+                    const vid = ytContainer.getAttribute('data-vid');
+                    // モーダルでは音量変更などができるように controls=1 と pointer-events を有効化
+                    ytContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${vid}?autoplay=1&mute=0&playsinline=1&controls=1&rel=0" class="absolute inset-0 w-full h-full border-0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                }
+            }
+
+            modalSwiper = new Swiper(".modalSwiper", {
+                loop: !isSingle,
+                speed: 400,
+                spaceBetween: 20,
+                // ▼ 追加：画像のピンチアウト（拡大）機能を有効化 ▼
+                zoom: {
+                    maxRatio: 3,
+                },
+                navigation: {
+                    nextEl: '.modal-next',
+                    prevEl: '.modal-prev',
+                },
+                pagination: {
+                    el: '.modal-pagination',
+                    clickable: true,
+                },
+                on: {
+                    init: function () {
+                        injectModalYouTube(this);
+                    },
+                    slideChangeTransitionEnd: function () {
+                        injectModalYouTube(this);
+                    }
+                }
+            });
+
+            // ==========================================
+            // 3. メイン画面タップでモーダルを開くイベント
+            // ==========================================
+            sliderTrack.addEventListener('click', function(e) {
+                const slide = e.target.closest('.swiper-slide');
+                if (slide) {
+                    const originalIndexStr = slide.getAttribute('data-original-index');
+                    const indexToSlide = originalIndexStr ? parseInt(originalIndexStr, 10) : 0;
+                    
+                    const modal = document.getElementById('news-modal');
+                    if (modal) {
+                        modal.classList.remove('opacity-0', 'pointer-events-none');
+                        modal.classList.add('opacity-100', 'pointer-events-auto');
+                        
+                        if (modalSwiper) {
+                            modalSwiper.slideToLoop(indexToSlide, 0); // 押した画像から即座にスタート
+                            injectModalYouTube(modalSwiper);
+                        }
+                    }
+                }
+            });
+
+            // ==========================================
+            // 4. モーダルを閉じるイベント
+            // ==========================================
+            const closeModalBtn = document.getElementById('close-news-modal');
+            const newsModal = document.getElementById('news-modal');
+            if (closeModalBtn && newsModal) {
+                closeModalBtn.addEventListener('click', () => {
+                    newsModal.classList.add('opacity-0', 'pointer-events-none');
+                    newsModal.classList.remove('opacity-100', 'pointer-events-auto');
+                    // 閉じるときは再生中の動画を停止させるため初期状態（画像）に戻す
+                    document.querySelectorAll('.yt-modal-dynamic').forEach(container => {
+                        const vid = container.getAttribute('data-vid');
+                        container.innerHTML = `
+                            <img src="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${vid}/hqdefault.jpg';" class="absolute inset-0 w-full h-full object-cover opacity-60">
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div class="w-16 h-12 bg-[#FF0000] rounded-2xl flex items-center justify-center shadow-lg">
+                                    <div class="w-0 h-0 border-t-[10px] border-t-transparent border-l-[16px] border-l-white border-b-[10px] border-b-transparent ml-1"></div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                });
+            }
+
         }
     } else {
         sliderWrapper.style.display = 'none'; 
