@@ -1,5 +1,5 @@
 @charset "UTF-8";
-@import url('https://fonts.googleapis.com/css2?family=Bangers&family=DotGothic16&family=Fredoka:wght@600&family=M+PLUS+Rounded+1c:wght@800&family=Zen+Maru+Gothic:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=DotGothic16&family=Fredoka:wght@600&family=M+PLUS+Rounded+1c:wght@800&family=Zen+Maru+Gothic:wght@700&family=Yuji+Syuku&display=swap');
 
 /* === ベース設定 === */
 .fixed-bg-container {
@@ -78,27 +78,31 @@ body {
 
 /* === 木の板の「通信中でっせ」装飾 === */
 .wood-board {
-    background-color: #5c3a21;
+    background-color: #d4a373; /* 明るい茶色に変更 */
     background-image:
-        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 0, 0, 0.1) 2px, rgba(0, 0, 0, 0.1) 4px),
-        repeating-radial-gradient(ellipse at 50% 150%, #7a4b29, #7a4b29 10px, #6b4226 15px, #6b4226 25px);
-    border: 3px solid #2e1a0f;
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 0, 0, 0.05) 2px, rgba(0, 0, 0, 0.05) 4px),
+        repeating-radial-gradient(ellipse at 50% 150%, #e0b388, #e0b388 10px, #cda270 15px, #cda270 25px); /* 木目も明るく調整 */
+    border: 3px solid #8b5a2b; /* 枠線を明るい茶色に変更 */
     border-radius: 8px;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.8), inset 1px 1px 3px rgba(255,255,255,0.2), 8px 8px 15px rgba(0,0,0,0.6);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.4), inset 1px 1px 3px rgba(255,255,255,0.3), 6px 6px 12px rgba(0,0,0,0.5);
     transform: rotate(-3deg);
 }
 
 .nail {
     position: absolute;
     width: 10px; height: 10px;
-    background-color: #A0A0A0;
+    background-color: #d0d0d0; /* 釘も少し明るく */
     border-radius: 50%;
-    box-shadow: inset -2px -2px 4px rgba(0,0,0,0.6), 1px 1px 2px rgba(255,255,255,0.4);
+    box-shadow: inset -2px -2px 4px rgba(0,0,0,0.4), 1px 1px 2px rgba(255,255,255,0.6);
+}
+
+#loader_text {
+    font-family: 'Yuji Syuku', serif; /* 筆書き風フォントを適用 */
 }
 
 .text-stroke-black {
-    -webkit-text-stroke: 2px #1C1C1E;
-    text-shadow: 3px 3px 0px #000;
+    -webkit-text-stroke: 1.5px #1C1C1E; /* 筆書きの繊細さに合わせて縁取りを微調整 */
+    text-shadow: 2px 2px 0px #000;
 }
 
 /* =========================================================
