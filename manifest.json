@@ -1,0 +1,21 @@
+{
+  "name": "KB PARK 福山店",
+  "short_name": "KB PARK",
+  "description": "広島県福山市の本格トランポリンパーク・室内遊び場",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#F0FFF4",
+  "theme_color": "#32D74B",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
