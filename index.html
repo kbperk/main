@@ -13,6 +13,7 @@
     <link rel="canonical" href="https://kbperk.github.io/main/">
 
     <link rel="icon" href="favicon.png" sizes="any">
+    <link rel="apple-touch-icon" href="favicon.png">
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://kbperk.github.io/main/"> 
@@ -141,21 +142,6 @@
                     }
                 }
             }
-        }
-    </script>
-
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#32D74B">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js').then(function(registration) {
-                    console.log('PWA: ServiceWorker登録成功');
-                }, function(err) {
-                    console.log('PWA: ServiceWorker登録失敗', err);
-                });
-            });
         }
     </script>
     <link rel="stylesheet" href="style.css">
